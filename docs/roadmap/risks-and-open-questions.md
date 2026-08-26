@@ -1,41 +1,377 @@
-# Riscos, Assunções e Questões em Aberto
+# Riscos, Assunções, Dependências e Questões em Aberto
 
-## Riscos de produto
-- ampliar escopo cedo demais;
-- construir features SaaS sem validar operação real;
-- IA gerar conteúdo enganoso;
-- sites/marketplaces criarem expectativa de estoque instantâneo sem contrato de freshness;
-- complexidade fiscal brasileira.
+> **Status:** registro vivo. Uma questão aberta não é um gap acidental quando está aqui com impacto e condição de resolução.
 
-## Riscos técnicos
-- isolamento cross-tenant;
-- races de estoque/reserva;
-- duplicidade de webhook/pagamento;
-- perda de mídia/offline sync;
-- integrations drift;
-- migration destrutiva;
-- custos de IA/storage/egress.
+## Como usar
 
-## Questões que exigem discovery
-- quantos CNPJs/legal entities existem na operação inicial;
-- como comissão funciona na prática;
-- seller vs cashier e vendas compartilhadas;
-- política de trocas/devoluções;
-- depósitos/locais de estoque;
-- impressoras, scanners, TEF/Pix e terminais;
-- política fiscal/contador;
-- confiabilidade de internet;
-- quais marketplaces serão realmente usados primeiro;
-- necessidade real de checkout próprio;
-- categorias e atributos recorrentes.
+Para cada risco relevante registrar:
 
-## Decisões ainda não congeladas
-- framework backend exato (Fastify vs NestJS ou alternativa);
-- ORM/query layer;
-- provedor cloud;
-- auth provider vs auth própria;
-- provider fiscal;
-- queue/storage concretos;
-- React Native/Expo após spike.
+```text
+Risco/questão
+Categoria
+Probabilidade
+Impacto
+Sinais
+Mitigação
+Contingência
+Owner
+Condição de resolução
+Status
+```
 
-Tudo isso exige ADR antes de implementação estrutural.
+Não inventar respostas para deixar documentação “bonita”.
+
+---
+
+# 1. Escopo
+
+## R-001 — Construir tudo cedo demais
+
+**Risco:** ERP + PDV + fiscal + mobile + site + IA + marketplaces + billing simultaneamente.
+
+**Impacto:** atraso, baixa qualidade, sistema nominalmente amplo e operacionalmente frágil.
+
+**Mitigação:** roadmap por fases, WIP baixo, Discovery e gates.
+
+## R-002 — Feature parity com concorrentes
+
+Benchmark virar backlog automático.
+
+**Mitigação:** exigir problema/usuário/métrica antes de capacidade entrar no roadmap ativo.
+
+---
+
+# 2. Discovery/negócio
+
+## Q-001 — Topologia legal
+
+- quantos CNPJs?
+- qual loja pertence a qual entidade?
+- estoque pode cruzar entidades?
+
+**Bloqueia:** schema final de LegalEntity, fiscal e transferências interempresa.
+
+## Q-002 — Comissão
+
+- percentual;
+- bruto/líquido;
+- desconto;
+- devolução;
+- troca;
+- promo;
+- fechamento/pagamento.
+
+**Bloqueia:** CommissionPlan produtivo.
+
+## Q-003 — Seller vs cashier real
+
+Modelo suporta ambos; validar se venda compartilhada por item existe.
+
+## Q-004 — Troca/devolução
+
+Semântica comercial/fiscal precisa de exemplos reais.
+
+## Q-005 — Estoques/depósitos
+
+Loja == location? Há depósito? Transferência imediata?
+
+## Q-006 — Hardware
+
+Impressoras, leitores, PCs, Smart POS, TEF, celulares e rede ainda precisam inventário.
+
+---
+
+# 3. Fiscal/pagamentos
+
+## R-003 — Complexidade fiscal brasileira
+
+Mudanças legais, contingência, certificados e rejeições podem paralisar venda.
+
+**Mitigação:** provider/ERP existente inicialmente; contador; homologação; adapter/runbook.
+
+## Q-007 — Provider fiscal
+
+Bling atual, Nuvem Fiscal, TecnoSpeed ou outro? Decisão por ADR/POC.
+
+## Q-008 — TEF/adquirentes/Pix
+
+Fluxo/hardware atual desconhecido.
+
+## R-004 — Duplicar cobrança/documento em retry
+
+**Mitigação:** idempotência + status query/reconciliation.
+
+---
+
+# 4. Multi-tenancy
+
+## R-005 — Vazamento cross-tenant
+
+Um dos riscos mais críticos de SaaS.
+
+**Mitigação:** server-side scope, object authz, tests, cache/job context, RLS defense-in-depth possível.
+
+## R-006 — Suporte com acesso excessivo
+
+**Mitigação:** support tooling mínimo, reason/audit/time-bound; nenhuma impersonation por default.
+
+## Q-009 — Estratégia enterprise dedicada
+
+DB/schema dedicado pode existir futuramente; não implementar antes de cliente/requisito.
+
+---
+
+# 5. Estoque
+
+## R-007 — Race/overselling
+
+Venda e reserva concorrentes podem consumir última unidade.
+
+**Mitigação:** transactions/constraints/locks, reservations, safety stock, tests.
+
+## Q-010 — Negative stock
+
+Policy real ainda precisa ser decidida.
+
+## R-008 — Drift balance/ledger
+
+**Mitigação:** reconciliation e balance reconstruível.
+
+## R-009 — Offline duplica movimento
+
+**Mitigação:** operationId/outbox/idempotency.
+
+---
+
+# 6. Mobile/offline
+
+## R-010 — Prometer offline total cedo
+
+Fiscal, pagamento e conflicts tornam isso complexo.
+
+**Mitigação:** começar inventário/drafts; PDV offline só com spec própria.
+
+## Q-011 — React Native + Expo
+
+Direção preferida, mas validar câmera, barcode, SQLite, printing, secure storage e distribution em spike/ADR.
+
+## R-011 — Dados locais em aparelho perdido
+
+**Mitigação:** secure storage, minimização, session revocation, lifecycle/cache protection.
+
+---
+
+# 7. IA
+
+## R-012 — Alterar aparência real da peça
+
+**Impacto:** anúncio enganoso/devolução/política de canal.
+
+**Mitigação:** Product Truth, original, provenance, eval, human review.
+
+## R-013 — Hallucination em descrição
+
+**Mitigação:** structured facts/unknown, schema, review.
+
+## R-014 — Custo imprevisível
+
+**Mitigação:** AI Gateway, quota/metering/budget/FinOps.
+
+## R-015 — Prompt injection/tool abuse
+
+**Mitigação:** untrusted input, tool allowlist, sem DB/shell irrestritos.
+
+## Q-012 — Providers/modelos
+
+Não congelados; avaliar qualidade, privacidade, custo, latência e termos.
+
+---
+
+# 8. Marketplaces
+
+## R-016 — APIs/políticas mudam
+
+**Mitigação:** adapters/versioned compliance, official docs, contract tests.
+
+## R-017 — Shopee access/contrato não confirmado
+
+Não congelar endpoints até onboarding/Open Platform atual.
+
+## R-018 — Rate limits/backlog
+
+**Mitigação:** queue, backpressure, concurrency, reconciliation.
+
+## R-019 — Publicar IA onde canal proíbe/restringe
+
+**Mitigação:** channel policy snapshot + revalidation no publish.
+
+## Q-013 — Ordem de canais
+
+Qual primeiro: TikTok Shop, Mercado Livre ou Shopee? Depende do plano real das lojas.
+
+---
+
+# 9. Bling/migração
+
+## R-020 — Duas fontes de verdade
+
+Core e Bling escrevendo estoque simultaneamente sem ownership.
+
+**Mitigação:** fases explícitas de transição; one source per capability.
+
+## R-021 — Importar dívida de dados
+
+SKUs/categorias duplicadas/variações ruins entram no Core.
+
+**Mitigação:** audit, staging, mapping, dry-run, reconciliation.
+
+## Q-014 — Quais módulos Bling são realmente usados
+
+Discovery obrigatório.
+
+---
+
+# 10. Storefront
+
+## R-022 — Site builder virar plataforma genérica cedo
+
+**Mitigação:** componentes/presets seguros, sem arbitrary JS/CSS inicialmente.
+
+## R-023 — Dados demo virarem claims reais
+
+**Mitigação:** `verified` vs `demonstration`, no fake Offer/best seller.
+
+## Q-015 — Checkout próprio
+
+WhatsApp pode ser suficiente inicialmente; validar demanda antes de payments/logistics completos.
+
+---
+
+# 11. Segurança/supply chain
+
+## R-024 — Secret em Git/frontend/mobile
+
+**Mitigação:** secret scanning, manager, architecture boundary.
+
+## R-025 — Dependency compromise
+
+**Mitigação:** lockfile, SCA, Dependabot review, CodeQL, minimal deps, SBOM/provenance quando necessário.
+
+## R-026 — Upload malicioso
+
+**Mitigação:** MIME/content, budgets, isolated storage, scan when justified.
+
+---
+
+# 12. Dados/LGPD
+
+## R-027 — Coletar PII sem finalidade
+
+**Mitigação:** privacy inventory/minimization.
+
+## R-028 — Deleção incompleta
+
+DB excluído, CDN/derivados/exports permanecem.
+
+**Mitigação:** lifecycle por representação.
+
+## Q-016 — Retenções legais
+
+Definir com apoio jurídico/contábil.
+
+---
+
+# 13. Infra/DevOps
+
+## Q-017 — Backend/framework
+
+Fastify, NestJS ou alternativa ainda não congelados.
+
+## Q-018 — ORM/query layer
+
+Avaliar SQL ergonomics, migrations, transactions e type safety.
+
+## Q-019 — Cloud/provider
+
+Escolher por custo, managed PostgreSQL, storage, jobs, observability, região e operação.
+
+## Q-020 — Queue/jobs
+
+Postgres-backed inicialmente pode bastar; provar antes de Kafka/Rabbit/SQS etc.
+
+## R-029 — Migration destrutiva
+
+**Mitigação:** expand/migrate/contract, tests, backups, rollout.
+
+## R-030 — CI verde mas feature quebrada
+
+**Mitigação:** anti-fake-smoke, integration/CUJ/manual QA.
+
+---
+
+# 14. SRE/operação
+
+## Q-021 — SLO/RPO/RTO
+
+Precisam de objetivo real, não números decorativos.
+
+## R-031 — Alert fatigue
+
+**Mitigação:** actionable alerts + runbooks.
+
+## R-032 — Backup nunca restaurado
+
+**Mitigação:** restore exercises.
+
+---
+
+# 15. SaaS comercial
+
+## Q-022 — Planos/preços
+
+Não definidos.
+
+## Q-023 — Billing provider
+
+Não escolhido.
+
+## R-033 — Pricing de IA sem unit economics
+
+**Mitigação:** metering e cost attribution antes de planos “ilimitados”.
+
+## R-034 — Onboarding exige suporte manual demais
+
+**Mitigação:** medir time-to-value e automatizar provisioning/import gradualmente.
+
+---
+
+# Assunções atuais
+
+São hipóteses, não fatos permanentes:
+
+1. PostgreSQL é boa base transacional inicial.
+2. Monólito modular é melhor que microserviços no estágio inicial.
+3. React Native + Expo provavelmente atende mobile.
+4. Bling deve ser integrado antes de substituído.
+5. Sites atuais podem migrar incrementalmente para Catalog API.
+6. Moda é domínio inicial forte, mas plataforma pode atender outros varejos.
+7. IA será assistiva/human-reviewed.
+8. SaaS usará DB compartilhado multi-tenant inicialmente com isolamento rigoroso.
+
+Cada uma pode virar ADR e ser revisada com evidência.
+
+# Registro de decisão
+
+Quando questão é resolvida:
+
+- criar/atualizar ADR;
+- remover de “aberta” ou marcar resolvida;
+- atualizar docs dependentes;
+- adicionar testes/gates se necessário.
+
+## Relacionados
+
+- [Discovery](../discovery/operational-discovery.md)
+- [ADRs](../adr/README.md)
+- [Roadmap](roadmap.md)
+- [Cobertura](documentation-coverage.md)
