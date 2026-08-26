@@ -1,77 +1,83 @@
-# Engineering Constitution
+# Engineering Constitution — Mora Core
 
-Mora Core follows a permanent professional engineering standard. The guiding principle is: **do not optimize to look sophisticated; optimize to withstand a serious audit.**
+Esta é a adaptação operacional do padrão permanente de engenharia ao Mora Core. A versão extensa que originou esta constituição prioriza regra de negócio, arquitetura simples com boas fronteiras, segurança, testes por risco, documentação confiável, CI assíncrona, supply chain, observabilidade, resiliência e uso responsável de IA.
 
-## Business rules and architecture
-- Identify actors, goals, states, transitions, invariants, permissions, errors, edge cases, concurrency, lifecycle and acceptance criteria before implementation.
-- Keep critical rules centralized in the domain/application layer; frontend validation is UX, not authority.
-- Prefer the simplest architecture with strong boundaries. The default is a modular monolith with high cohesion, low coupling, explicit contracts, dependency inversion and ports/adapters.
-- Avoid giant entry files, controllers, components, circular dependencies and premature distributed architecture.
-- Record significant decisions in ADRs.
+## 1. Objetivo
 
-## Code quality
-- Use clear names, explicit types/contracts, deliberate error handling and comments that explain why.
-- Avoid broad silent catches, indiscriminate dynamic typing, magic values, placeholders, dead code, duplicate business rules and abstractions without a demonstrated benefit.
-- AI-generated code is an untrusted draft until reviewed and tested. Test count, coverage, line count and commit count are not proof of quality.
+Construir software que resista a auditoria técnica séria e uso real. “Funciona na demo” não é Definition of Done.
 
-## Data, concurrency and lifecycle
-- Define identity, ownership, state, relationships, uniqueness, retention, deletion, audit, concurrency, version and provenance for important entities.
-- Use database constraints and transactions to protect important invariants. Migrations are schema authority.
-- Consider simultaneous operations and apply appropriate transaction, uniqueness, locking, versioning and idempotency mechanisms.
-- Classify data as authoritative persistent, persistent derived, regenerable cache or ephemeral. Deletion must account for database records, files, derived media, indexes, analytics and backups according to policy.
+## 2. Regra de negócio primeiro
 
-## Security and privacy
-- Security is designed in, not added at the end.
-- Authentication, authorization, object authorization and tenant isolation are separate concerns.
-- Apply least privilege, fail-closed behavior for critical decisions, input validation, output safety, secure session handling, resource limits, upload controls and audit where appropriate.
-- Secrets must never be committed, shipped to public clients, logged or placed in documentation/fixtures. Agents receive only the capabilities required for the task.
+Antes de implementar, identificar atores, objetivos, estados, transições, invariantes, permissões, inputs/outputs, erros, edge cases, concorrência, lifecycle, critérios de aceitação e requisitos não funcionais. Frontend pode validar por UX, mas backend/domínio é autoridade.
 
-## APIs and contracts
-- Prefer pragmatic resource-oriented HTTP semantics when suitable: correct methods/status codes, pagination, filtering, sorting, limits, authorization, concurrency controls, cache semantics and consistent errors.
-- OpenAPI and other schemas should be real contracts rather than decorative documentation.
-- Do not model APIs as a direct mirror of database tables.
+## 3. Arquitetura
 
-## Testing and QA
-- Tests must prove behavior. Use unit/component tests heavily, real integration tests at important boundaries and a small number of end-to-end critical journeys.
-- Add contract, database, property, fuzz, mutation, security, migration, recovery and performance tests according to risk.
-- Mock external dependencies, not the behavior being proved.
-- Smoke tests must verify a meaningful effect/state, not only process startup.
-- Flaky tests are defects; prefer deterministic clocks, isolated fixtures and state-based waits.
-- Important milestones require verification, validation and independent audit.
+Escolher a solução mais simples com fronteiras claras. Monólito modular é o default. Buscar coesão alta, acoplamento baixo, contratos claros e dependency inversion. Evitar God Objects, `utils` genérico, serviços gigantes, dependências circulares e microserviços prematuros.
 
-## Frontend and accessibility
-- UI should reflect the domain and distinguish server, UI, form, URL and persistent-preference state.
-- Avoid giant pages/components.
-- Accessibility is part of Definition of Done: semantic HTML, keyboard/focus behavior, labels, contrast, screen readers, browser zoom, reduced motion and adequate touch targets.
+## 4. Dados
 
-## AI systems
-- AI may propose, classify, summarize, structure and generate content; deterministic code remains responsible for calculations, authorization, invariants and persistence.
-- AI/tool/external outputs are untrusted and should use structured contracts, limits, provenance and human checkpoints when commercial or high-impact decisions are involved.
-- AI evaluation should include golden and adversarial cases, grounding/source support, format adherence and human review.
+Migrations são autoridade do schema. Banco protege invariantes importantes com PK/FK/UNIQUE/NOT NULL/CHECK/transações. Avaliar identity, ownership, lifecycle, uniqueness, retention, deletion, audit, concorrência, versão e proveniência.
 
-## Git, CI and releases
-- Work in small coherent batches: focused validation, logical commit and real remote push.
-- A clean worktree is not proof that GitHub is synchronized.
-- Continue independent tasks while remote CI runs, then checkpoint remote failures between milestones.
-- The exact final SHA must be remote and green before tagging a release.
-- The artifact released should be the artifact actually validated; use hashes, SBOM and provenance when appropriate.
+## 5. Concorrência e idempotência
 
-## Dependencies and supply chain
-- New dependencies require justification for necessity, license, maintenance, security, compatibility and runtime/build cost.
-- Keep lockfiles and least-privilege CI permissions. Apply static analysis, dependency/security scanning, secret scanning and provenance controls proportionally.
+Nunca depender apenas de check-then-write. Usar constraints, transações, locks ou optimistic concurrency quando necessário. Webhooks, pagamentos, importações e operações retryable devem ser idempotentes.
 
-## Documentation and delivery
-- README is the current entry point, not a changelog.
-- Current docs describe current truth. Release notes preserve history. ADRs preserve decisions. Runbooks preserve operational procedures.
-- Use lightweight Kanban with low WIP. Definition of Ready includes objective, business rule, acceptance criteria, risks and explicit out-of-scope. Definition of Done includes correct/negative behavior, security, tests, docs/contracts/migrations, remote push and required green gates.
+## 6. Segurança e privacidade
 
-## Observability, resilience and performance
-- Baseline observability includes structured logs, actionable errors and correlation IDs; servers add meaningful readiness/liveness and metrics as needed.
-- Add timeouts, retries/backoff, queues, circuit controls, outbox/inbox, feature flags or other resilience patterns only when a real failure mode justifies them.
-- Measure performance before optimizing: inspect algorithmic complexity, query plans, repeated work, network calls, allocations, memory and I/O.
+AuthN, AuthZ, autorização de objeto e isolamento de tenant são conceitos distintos. Aplicar menor privilégio, fail closed, defesa em profundidade, validação, limites de recurso, proteção contra injection/XSS/CSRF/SSRF/IDOR/BOLA, sessões seguras e auditoria. Secrets nunca entram em Git, frontend ou logs.
 
-## Agent workflow
-Use this constitution together with `AGENTS.md`, module docs, ADRs, small task specs and executable checks. Long sessions should keep a concise handoff/build ledger. Single-agent work is the default; parallel agents/worktrees are reserved for truly independent tasks.
+## 7. APIs
 
-## Honest status vocabulary
-Use `implemented`, `partial`, `experimental`, `planned`, `deferred` and `not validated`. Never claim completion without evidence.
+APIs HTTP devem ser resource-oriented quando adequado, com métodos/status corretos, paginação/limites, filtros, idempotência, autorização e contratos de erro consistentes. OpenAPI deve representar contrato real. Não espelhar tabelas diretamente como API. Ações de domínio podem usar comandos explícitos.
+
+## 8. Testes
+
+Escolher por risco: unit, component, integration, contract, DB integration, E2E de jornadas críticas, property/fuzz/mutation/security/migration/recovery/performance quando justificável. Não mockar o comportamento que o teste deveria provar. Smoke precisa provar consequência real. Flaky test é defeito.
+
+## 9. Git e CI
+
+Pequenos batches: teste focado → commit lógico → push remoto real. CI remota trabalha em paralelo. Antes de tag/release, o SHA exato deve estar remoto e verde. Não fazer force-push destrutivo em branches compartilhadas sem autorização.
+
+## 10. Release engineering
+
+Artifact publicado deve ser o mesmo artifact validado: source SHA → tests → artifact → hash → SBOM/provenance quando aplicável → tag → release. Evitar reconstruções divergentes.
+
+## 11. Supply chain
+
+Toda dependência nova precisa justificar necessidade, licença, manutenção, segurança, compatibilidade e custo. Lockfiles. GitHub Actions com permissões mínimas e pinning robusto quando adequado. Usar SAST/SCA/CodeQL/secret scanning/container/IaC scanning conforme a superfície existir.
+
+## 12. Documentação
+
+README é entrada atual, não changelog. Docs atuais descrevem a verdade atual. ADR registra decisão. Runbook registra operação/recovery. Threat model registra risco/controle. Exemplos/comandos/links devem ser verificáveis quando possível.
+
+## 13. Observabilidade, SRE e AIOps
+
+Baseline: logs estruturados, erros acionáveis e correlation IDs. Serviços reais: metrics, liveness/readiness; tracing e SLOs quando a complexidade justificar. AIOps pode auxiliar detecção/correlação, nunca substituir sinais determinísticos ou procedimentos de incidente.
+
+## 14. Resiliência e performance
+
+Timeout, retry/backoff/jitter, circuit breaker, bulkhead, backpressure, outbox/inbox e DLQ entram apenas se o problema existir. Medir antes de otimizar; investigar Big-O, N+1, query plans, I/O e chamadas duplicadas antes de introduzir cache/Redis.
+
+## 15. Frontend e acessibilidade
+
+UI reflete o domínio e separa server state, UI state, form state, URL state e preferências. Acessibilidade é requisito desde o design: semântica, teclado, foco, contraste, labels, screen reader, zoom, reduced motion e touch targets.
+
+## 16. IA
+
+LLMs são bons para propor, resumir, classificar, estruturar e explicar. Sistemas determinísticos calculam, autorizam, validam invariantes e persistem. Output de IA é não confiável. Usar schemas/structured outputs, budgets, proveniência, avaliações e revisão humana proporcional ao risco. Prompt injection não pode ampliar capabilities.
+
+## 17. Agentes de desenvolvimento
+
+Agentes recebem mapa do repo, instruções curtas, ADRs, task spec e gates executáveis. Evitar prompts gigantes repetitivos. Single agent é padrão; paralelismo somente para trabalho realmente independente. Sessões longas usam handoff/ledger.
+
+## 18. Verification != Validation
+
+Verification responde “construímos corretamente?”. Validation responde “construímos a coisa certa?”. Ambos são necessários.
+
+## 19. Auditoria independente
+
+Milestones importantes exigem revisão independente de implementação, arquitetura, segurança, dados, testes, docs, performance e claims. “Testes verdes” ou “agente disse que terminou” não provam completion.
+
+## 20. Definition of Done
+
+Uma mudança está pronta quando a regra funciona, negativos foram considerados, segurança é adequada, testes são significativos, docs/contratos/migrations estão consistentes, não há dead code relevante, push remoto ocorreu e os gates aplicáveis estão verdes no SHA correto.

@@ -1,48 +1,52 @@
-# SECURITY
+# Segurança — Mora Core
 
-Mora Core is proprietary software and is being designed for real retail operations involving inventory, sales, employees, commissions, cash, customer data, integrations and eventually fiscal/marketplace workflows. Security is therefore a product property, not a final audit phase.
+A segurança do Mora Core é parte da arquitetura e da Definition of Done, não uma etapa final.
 
-## Reporting a vulnerability
-Do not open a public issue containing credentials, exploit details, customer data or a proof-of-concept that could endanger a live deployment. Report security concerns privately to the project owner through an authorized private channel.
+## Estado
 
-A useful report should include:
-- affected component/version/SHA;
-- impact and preconditions;
-- reproducible steps;
-- whether tenant isolation, money, inventory, authentication, authorization or secrets are affected;
-- logs/screenshots only after removing sensitive data.
+O projeto ainda está em fase de documentação/arquitetura. Nenhuma alegação de conformidade é feita neste momento.
 
-## Security principles
-- Secure-by-design and secure-by-default.
-- Least privilege and fail closed for security-critical decisions.
-- Defense in depth.
-- Strong separation of authentication, authorization, object-level authorization and tenant isolation.
-- No client-provided tenant identity is trusted without server-side resolution.
-- No secrets in source code, frontend/mobile bundles, documentation, logs or error messages.
-- Parameterized database access and schema validation at trust boundaries.
-- Resource budgets for uploads, API responses, pagination, external calls, AI usage and background work.
-- Idempotency for retried writes, webhooks, imports, payments and jobs where duplication would be harmful.
-- Audit trails for sensitive business actions.
-- Data minimization and explicit lifecycle/retention rules.
+## Princípios
 
-## High-risk areas
-The following require threat modeling and stronger validation:
-- login/session/MFA and account recovery;
-- tenant/store membership and role changes;
-- cross-tenant resource access;
-- inventory movements and reconciliation;
-- discounts, cancellations, returns and exchanges;
-- cash sessions and closing differences;
-- commission rules and settlement;
-- payment/TEF/PSP adapters;
-- fiscal adapters and document issuance;
-- marketplace credentials and webhook handling;
-- product/media uploads and AI processing;
-- bulk import/export;
-- billing and entitlements;
-- database migrations and backup/restore.
+- secure-by-design e secure-by-default;
+- menor privilégio;
+- fail-closed em decisões sensíveis;
+- defesa em profundidade;
+- isolamento forte de tenant;
+- autorização no recurso/objeto;
+- secrets apenas no backend/secret manager;
+- dados e outputs externos tratados como não confiáveis;
+- limites explícitos de recursos;
+- trilha de auditoria para operações sensíveis.
 
-## Security verification baseline
-As implementation appears, CI should progressively cover lint/type checks, dependency auditing, secret scanning, SAST/CodeQL, test suites, migration verification and supply-chain checks. High/Critical real findings are addressed early; scanner output is triaged rather than blindly accepted.
+Referências de projeto: OWASP ASVS, OWASP API Security Top 10, NIST SSDF e boas práticas equivalentes, sem alegação automática de compliance.
 
-See `docs/security/security-architecture.md` for the threat model and controls, `docs/data/data-lifecycle.md` for lifecycle/privacy concerns and `docs/devops/devsecops.md` for pipeline controls.
+## Dados especialmente sensíveis
+
+Prioridade de proteção elevada para: credenciais, dados pessoais de clientes/funcionários, vendas, comissões, movimentações financeiras, documentos fiscais, tokens de marketplace, mídia privada e trilhas de auditoria.
+
+Dados de cartão não devem ser armazenados pelo Mora Core quando provedores/TEF puderem assumir essa responsabilidade.
+
+## Multi-tenancy
+
+Nunca autorizar acesso apenas porque o recurso existe ou porque o cliente enviou um `organizationId`. O contexto autorizado deve ser derivado da identidade autenticada e das memberships/permissões. Testes adversariais entre tenants são obrigatórios antes de SaaS público.
+
+## Uploads e mídia
+
+Validar tamanho, MIME real, dimensões, quantidade e tipo. Não confiar em extensão. Processar em ambiente isolado quando aplicável. Metadados sensíveis devem ser removidos quando não necessários. Original e derivados precisam de política de lifecycle.
+
+## Integrações
+
+Tokens OAuth/API devem ser criptografados no backend, com escopo mínimo, rotação/revogação e redaction em logs. Webhooks exigem validação de assinatura/origem quando o provedor suportar, dedupe e processamento idempotente.
+
+## IA
+
+Prompts, imagens, documentos e respostas de modelos são inputs não confiáveis. IA nunca pode ampliar permissões, modificar tenant, executar SQL arbitrário, decidir preço/estoque/tributação, ou publicar afirmações não verificadas sem guardrails e checkpoint humano conforme risco.
+
+## Vulnerabilidades
+
+Enquanto o projeto estiver sob desenvolvimento fechado, reporte vulnerabilidades diretamente ao mantenedor por canal privado apropriado. Não publique segredos, tokens, dados pessoais ou detalhes exploráveis em issues públicas.
+
+## Incidentes
+
+Incidentes futuros seguem `docs/operations/incident-recovery.md`, com contenção, preservação de evidência, rotação de credenciais, comunicação proporcional, recuperação, validação e postmortem sem culpabilização.

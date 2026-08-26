@@ -1,40 +1,49 @@
-# Contributing to Mora Core
+# Contribuindo com o Mora Core
 
-Mora Core is proprietary. Contributions are accepted only under project-owner authorization and do not grant a license to redistribute the project.
+Mora Core é software proprietário. Contribuições não são automaticamente aceitas e não transformam o projeto em open source.
 
-## Before coding
-A task should have a clear objective, business rule, acceptance criteria, risks, affected modules and explicit out-of-scope. Read `AGENTS.md`, the closest module documentation and relevant ADRs.
+## Antes de começar
 
-## Branching and commits
-Prefer small coherent changes. Direct-main may be used when explicitly allowed by the project owner; otherwise use a short-lived branch/PR. A local commit is not a delivery milestone until the remote repository contains the exact SHA.
+Leia:
+- `AGENTS.md`;
+- `docs/index.md`;
+- `docs/engineering/constitution.md`;
+- documentação específica do domínio alterado;
+- ADRs relacionados.
 
-Commit messages should describe the intent rather than file count, for example:
-- `feat(inventory): add transfer receipt workflow`
-- `fix(authz): scope product lookup by organization`
-- `docs(architecture): record storefront boundary`
+## Fluxo esperado
 
-Avoid giant mixed commits.
+1. Defina objetivo e critérios de aceitação.
+2. Identifique regras de negócio, riscos, permissões, concorrência e out-of-scope.
+3. Faça alteração pequena e coerente.
+4. Adicione/ajuste testes proporcionais ao risco.
+5. Atualize documentação/contratos/migrations se necessário.
+6. Rode gates focados.
+7. Faça commit lógico.
+8. Faça push remoto real.
+9. Aguarde/acompanhe CI assíncrona sem polling excessivo.
+10. Antes de release, valide o SHA exato.
 
-## Definition of Done
-A change is not done only because it compiles. Depending on risk, DoD includes:
-- business rule and negative paths behave correctly;
-- authorization/tenant boundaries are enforced server-side;
-- relevant unit/integration/contract/E2E tests exist and fail for the right reasons;
-- migrations and contracts are updated safely;
-- docs represent current behavior;
-- no relevant dead code, debug logs or leaked secrets;
-- lint/type/tests/security gates pass;
-- remote push is confirmed;
-- required CI gates are green for the exact SHA.
+## Commits
 
-## Reviews
-Review architecture, correctness, security, data integrity, tests, accessibility, performance and claims. Important milestones require independent review rather than relying only on the implementing agent.
+Mensagens curtas e semânticas, por exemplo:
+- `feat(catalog): add variant availability rules`
+- `fix(inventory): prevent duplicate transfer receipt`
+- `docs(architecture): record tenancy decision`
+- `test(commissions): cover partial return reversal`
 
-## Dependencies
-Do not add a package because it saves a few lines. Check necessity, maintenance, license, security, compatibility, bundle/runtime cost and whether the current stack already solves the problem.
+## Qualidade
 
-## Documentation
-README is the current entry point. `docs/` is current truth. Release history belongs in release notes/changelog. Important architectural decisions belong in ADRs. Operational recovery belongs in runbooks.
+Não são aceitos como evidência suficiente: muitos testes, coverage alto, build verde isolado, screenshots, ou relatório do próprio agente implementador. A mudança precisa provar comportamento e não degradar arquitetura, segurança, acessibilidade ou dados.
 
-## AI-assisted development
-AI-generated code is an untrusted draft. Agents must follow `AGENTS.md`, use bounded capabilities and provide evidence. Do not accept implementation reports as proof without tests/runtime inspection.
+## Dependências
+
+Nova dependência exige justificativa de necessidade, licença, manutenção, segurança, compatibilidade e custo de runtime/build. Lockfile é obrigatório quando a stack suportar.
+
+## Segurança
+
+Nunca commite secrets. `.env.example` contém apenas placeholders. Alterações em auth, tenant isolation, pagamentos, fiscal, migrations, inventory e release são consideradas de risco elevado e exigem validação mais forte.
+
+## Documentação
+
+Current docs representam a verdade atual. Histórico pertence a changelog/release notes. Decisões estruturais relevantes devem ganhar ADR.

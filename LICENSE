@@ -1,15 +1,15 @@
-# Proprietary License — Mora Core
+Copyright © 2026 Mora Core. Todos os direitos reservados.
 
-Copyright © 2026 Mora Core. All rights reserved.
+Este software e todo o seu código-fonte, documentação, arquitetura, materiais, marcas, ativos e demais conteúdos associados são proprietários e confidenciais, salvo quando expressamente indicado de outra forma.
 
-This repository and all source code, documentation, designs, specifications, data models, workflows, assets and other materials contained in it (collectively, the “Software”) are proprietary and confidential except where a file, dependency or third-party component explicitly states otherwise.
+Nenhuma parte deste software pode ser copiada, modificada, distribuída, sublicenciada, publicada, vendida, disponibilizada como serviço, utilizada comercialmente, submetida a engenharia reversa ou incorporada a outro produto sem autorização prévia e expressa do titular dos direitos.
 
-No permission is granted to copy, modify, reproduce, publish, distribute, sublicense, sell, lease, host, provide as a service, create derivative works from, reverse engineer, decompile, disassemble, or otherwise use the Software, in whole or in part, without prior written authorization from the copyright holder.
+O acesso a este repositório, inclusive quando tecnicamente público, NÃO concede licença de uso, cópia, modificação ou redistribuição.
 
-Access to this repository does not grant a license to use the Software.
+Contribuições, quando aceitas, não implicam transferência automática de direitos nem concessão de licença pública. Termos específicos poderão ser definidos antes da aceitação de contribuições externas.
 
-Third-party software and dependencies remain subject to their respective licenses. Nothing in this notice overrides rights or obligations imposed by those licenses.
+O software é fornecido no estado em que se encontra, sem garantias expressas ou implícitas, na máxima extensão permitida pela legislação aplicável.
 
-THE SOFTWARE IS PROVIDED WITHOUT ANY EXPRESS OR IMPLIED WARRANTY TO UNAUTHORIZED USERS. AUTHORIZED USE, SUPPORT, SERVICE LEVELS AND OTHER COMMERCIAL TERMS, IF ANY, ARE GOVERNED BY SEPARATE WRITTEN AGREEMENTS.
+Mora Core é o nome do produto. A definição do titular jurídico definitivo e eventual registro de marca/software serão tratados separadamente conforme a evolução societária e comercial do projeto.
 
-For licensing or commercial authorization, contact the copyright holder through an authorized Mora Core channel.
+© 2026 Mora Core. Todos os direitos reservados.

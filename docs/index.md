@@ -1,64 +1,63 @@
-# Documentation Index
+# Documentação do Mora Core
 
-This directory is the canonical knowledge base for Mora Core. Documents describe intended product behavior, architecture, controls and delivery strategy. Until code exists and is validated, design statements are **planned**, not implementation claims.
+Este índice é a entrada canônica para a documentação técnica e de produto.
 
-## Product
-- [Vision](product/vision.md)
-- [Modules](product/modules.md)
-- [Personas and critical journeys](product/personas-and-journeys.md)
-- [Storefront / website builder](product/storefront.md)
+> **Status geral:** planejamento/arquitetura. Não confunda documentação com implementação concluída.
 
-## Architecture
-- [System architecture](architecture/system-architecture.md)
-- [Modular monolith](architecture/modular-monolith.md)
-- [API contracts](architecture/api-contracts.md)
-- [Domain model](domain/domain-model.md)
-- [Inventory](domain/inventory.md)
-- [Sales, cash and commissions](domain/sales-cash-commissions.md)
-- [Fiscal and payments](domain/fiscal-and-payments.md)
+## Produto
+- [Visão](product/vision.md)
+- [Módulos e capacidades](product/modules.md)
+- [Personas e jornadas](product/personas-and-journeys.md)
+- [Storefront / criação de sites](product/storefront.md)
 
-## SaaS
+## Arquitetura
+- [Arquitetura do sistema](architecture/system-architecture.md)
+- [Monólito modular](architecture/modular-monolith.md)
+- [Contratos de API](architecture/api-contracts.md)
 - [Multi-tenancy](saas/multitenancy.md)
-- [Onboarding, billing and entitlements](saas/onboarding-billing-entitlements.md)
 
-## Mobile
-- [Mobile app](mobile/mobile-app.md)
-- [Barcodes and scanning](mobile/barcodes-and-scanning.md)
+## Domínio
+- [Modelo de domínio](domain/domain-model.md)
+- [Estoque](domain/inventory.md)
+- [Vendas, caixa e comissões](domain/sales-cash-commissions.md)
+- [Fiscal e pagamentos](domain/fiscal-and-payments.md)
 
-## AI
-- [AI governance](ai/ai-governance.md)
-- [Media pipeline](ai/media-pipeline.md)
+## Catálogo, commerce e canais
+- [Taxonomia do catálogo](commerce/catalog-taxonomy.md)
+- [PIM, OMS e omnichannel](commerce/omnichannel.md)
+- [Marketplaces](integrations/marketplaces.md)
+- [Bling](integrations/bling.md)
 
-## Commerce and integrations
-- [Catalog taxonomy](commerce/catalog-taxonomy.md)
-- [Omnichannel / PIM / OMS](commerce/omnichannel.md)
-- [Marketplace strategy](integrations/marketplaces.md)
-- [Bling integration strategy](integrations/bling.md)
+## Mobile e IA
+- [Aplicativo mobile](mobile/mobile-app.md)
+- [Barcode, etiquetas e scanner](mobile/barcodes-and-scanning.md)
+- [Governança de IA](ai/ai-governance.md)
+- [Pipeline de mídia](ai/media-pipeline.md)
 
-## Security, privacy and data
-- [Security architecture](security/security-architecture.md)
-- [Data lifecycle](data/data-lifecycle.md)
-- [Privacy and LGPD](data/privacy-lgpd.md)
-
-## Quality and operations
+## Segurança, QA e engenharia
 - [Engineering Constitution](engineering/constitution.md)
-- [QA/test strategy](qa/test-strategy.md)
+- [Segurança e threat model](security/security-architecture.md)
+- [QA e testes](qa/test-strategy.md)
 - [DevOps / DevSecOps](devops/devsecops.md)
-- [SRE / observability / AIOps](operations/sre-aiops.md)
-- [Performance and capacity](operations/performance-capacity.md)
-- [Incident and recovery](operations/incident-recovery.md)
-- [Accessibility and UX](ux/accessibility-and-design.md)
+- [SRE e AIOps](operations/sre-aiops.md)
+- [Performance e capacidade](operations/performance-capacity.md)
+- [Incidentes e recuperação](operations/incident-recovery.md)
+- [Data lifecycle](data/data-lifecycle.md)
+- [Acessibilidade e UX](ux/accessibility-and-design.md)
 
-## Planning and research
+## Planejamento e pesquisa
 - [Roadmap](roadmap/roadmap.md)
-- [Risks and open questions](roadmap/risks-and-open-questions.md)
-- [Competitive benchmark](research/competitive-benchmark.md)
-- [ADR index](adr/README.md)
+- [Riscos e questões em aberto](roadmap/risks-and-open-questions.md)
+- [Benchmark competitivo](research/competitive-benchmark.md)
+- [ADRs](adr/README.md)
 
-## Documentation rules
-1. Current docs describe current truth; do not use them as a release diary.
-2. Planned behavior must be labeled as planned.
-3. Significant architecture changes require an ADR or an explicit update to an existing decision.
-4. Cross-link related documents instead of duplicating rules.
-5. Commands/examples should be executable or clearly illustrative.
-6. When implementation contradicts documentation, treat it as a defect and reconcile deliberately.
+## Convenções
+
+- `README.md`: visão resumida e mapa do projeto.
+- `/docs`: verdade atual aprofundada.
+- ADR: decisões e trade-offs.
+- Runbook: operação, incidentes e recovery.
+- Changelog/release notes: história, quando existirem releases.
+- Status: `implementado`, `parcial`, `experimental`, `planejado`, `adiado`, `não validado`.
+
+Documentos relacionados devem possuir links entre si para reduzir duplicação e facilitar navegação.
