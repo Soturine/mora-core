@@ -90,6 +90,8 @@
 | demo vs dado comercial verificado | [Storefront](../product/storefront.md) |
 | SEO/Offer só com dados verdadeiros | [Storefront](../product/storefront.md) |
 | site consumindo Catalog API futura | [Storefront](../product/storefront.md) + [Contratos de API](../architecture/api-contracts.md) |
+| site → WhatsApp contextualizado | [Storefront](../product/storefront.md) + [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) |
+| enviar foto e buscar produto parecido | [Storefront](../product/storefront.md) + [Demanda/Sourcing](../commerce/customer-demand-and-sourcing.md) |
 
 ## 5. PIM, OMS e marketplaces
 
@@ -112,6 +114,7 @@
 | webhooks rápidos + dedupe | [Confiabilidade](../integrations/reliability-patterns.md) |
 | reconciliation | [Confiabilidade](../integrations/reliability-patterns.md) + [Omnichannel](../commerce/omnichannel.md) |
 | credenciais por tenant no backend | [Marketplaces](../integrations/marketplaces.md) + [Segurança](../security/security-architecture.md) |
+| listing de marketplace como alternativa somente se for da mesma Organization | [Omnichannel](../commerce/omnichannel.md) + [Demanda/Sourcing](../commerce/customer-demand-and-sourcing.md) |
 
 ## 6. SaaS e nuvem
 
@@ -140,6 +143,7 @@
 | sem microservices/K8s/Kafka prematuros | [Monólito modular](../architecture/modular-monolith.md) + [Escopo](../product/scope-and-non-goals.md) |
 | arquitetura por capabilities, não exceção por cliente | [Multi-tenancy](../saas/multitenancy.md) |
 | Mora como design partner inicial | [Visão](../product/vision.md) + [Roadmap](roadmap.md) |
+| busca/recomendação/vector search nunca atravessa tenant | [Multi-tenancy](../saas/multitenancy.md) + [Omnichannel](../commerce/omnichannel.md) |
 
 ## 7. Engenharia profissional
 
@@ -161,7 +165,56 @@
 | acessibilidade | [UX/Acessibilidade](../ux/accessibility-and-design.md) |
 | agentes e `AGENTS.md` | [Engineering Constitution](../engineering/constitution.md) + `/AGENTS.md` |
 
-## 8. Itens que continuam deliberadamente abertos
+## 8. WhatsApp, busca visual, demanda e sourcing
+
+| Assunto discutido | Documento canônico |
+| --- | --- |
+| IA conversa naturalmente no WhatsApp | [WhatsApp Commerce Agent](../commerce/whatsapp-commerce-agent.md) |
+| IA consulta catálogo/preço/estoque real | [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) |
+| cliente manda foto e pergunta “tem algo assim?” | [Demanda/Sourcing](../commerce/customer-demand-and-sourcing.md) + [Storefront](../product/storefront.md) |
+| busca visual somente na mesma Organization | [Demanda/Sourcing](../commerce/customer-demand-and-sourcing.md) + [Multi-tenancy](../saas/multitenancy.md) |
+| nunca sugerir concorrente/outro tenant | [Multi-tenancy](../saas/multitenancy.md) + [Omnichannel](../commerce/omnichannel.md) + `/AGENTS.md` |
+| alternativas em outra loja da mesma organização | [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) + [Omnichannel](../commerce/omnichannel.md) |
+| personal shopper por linguagem natural | [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) |
+| fotos, modelos e comparação | [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) + [Mídia](../ai/media-pipeline.md) |
+| cross-sell/“quer algo a mais?” | [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) |
+| carrinho conversacional | [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) |
+| reserva da última unidade/TTL | [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) + [Estoque](../domain/inventory.md) |
+| comprovante visual não confirma pagamento | [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) + [Fiscal/Pagamentos](../domain/fiscal-and-payments.md) |
+| baixa no estoque após confirmação determinística | [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) |
+| handoff para funcionária com resumo | [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) |
+| back-in-stock | [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) + [Demanda/Sourcing](../commerce/customer-demand-and-sourcing.md) |
+| carrinho abandonado com consentimento | [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) |
+| “quando forem para SP tragam para mim” | [Demanda/Sourcing](../commerce/customer-demand-and-sourcing.md) |
+| `CustomerRequest` | [Demanda/Sourcing](../commerce/customer-demand-and-sourcing.md) |
+| `DemandSignal` / demanda perdida | [Demanda/Sourcing](../commerce/customer-demand-and-sourcing.md) |
+| `SourcingRequest` | [Demanda/Sourcing](../commerce/customer-demand-and-sourcing.md) |
+| `ProcurementTrip` | [Demanda/Sourcing](../commerce/customer-demand-and-sourcing.md) |
+| candidato encontrado → foto/preço → aprovação | [Demanda/Sourcing](../commerce/customer-demand-and-sourcing.md) |
+| item recebido → reserva para cliente | [Demanda/Sourcing](../commerce/customer-demand-and-sourcing.md) + [Compras](../domain/purchasing-and-suppliers.md) |
+| agrupar demanda para próxima compra | [Demanda/Sourcing](../commerce/customer-demand-and-sourcing.md) + [Compras](../domain/purchasing-and-suppliers.md) |
+| supplier catalog futuro | [Compras](../domain/purchasing-and-suppliers.md) |
+| Meta Business Agent como opção, sem lock-in | [Benchmark conversacional](../research/conversational-commerce-benchmark.md) + [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) |
+| WhatsApp Flows | [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) + [Benchmark conversacional](../research/conversational-commerce-benchmark.md) |
+| Embedded Signup por tenant | [WhatsApp Commerce](../commerce/whatsapp-commerce-agent.md) |
+| roadmap incremental dessa capacidade | [Roadmap Conversacional](conversational-commerce-roadmap.md) |
+
+## 9. Fiscal brasileiro e pagamento conversacional
+
+| Assunto discutido | Documento canônico |
+| --- | --- |
+| governo/SEFAZ possui integração fiscal oficial | [Fiscal Brasil](../integrations/fiscal-brazil.md) |
+| NF-e/NFC-e via WebServices/MOC/XML/certificado | [Fiscal Brasil](../integrations/fiscal-brazil.md) |
+| NFS-e nacional possui APIs, mas é para serviços | [Fiscal Brasil](../integrations/fiscal-brazil.md) |
+| NFC-e SP no contexto 2026 | [Fiscal/Pagamentos](../domain/fiscal-and-payments.md) + [Fiscal Brasil](../integrations/fiscal-brazil.md) |
+| começar via Bling/provedor em vez de fiscal próprio | [Fiscal Brasil](../integrations/fiscal-brazil.md) + [Bling](../integrations/bling.md) |
+| `FiscalPort` | [Fiscal Brasil](../integrations/fiscal-brazil.md) |
+| XML e DANFE | [Fiscal Brasil](../integrations/fiscal-brazil.md) |
+| DARF não é nota/comprovante fiscal normal da venda | [Fiscal Brasil](../integrations/fiscal-brazil.md) |
+| certificado A1/secrets | [Fiscal Brasil](../integrations/fiscal-brazil.md) + [Segurança](../security/security-architecture.md) |
+| homologação/contingência/reconciliation | [Fiscal Brasil](../integrations/fiscal-brazil.md) |
+
+## 10. Itens que continuam deliberadamente abertos
 
 Cobertura temática não significa que todas as decisões já podem ser congeladas. Permanecem dependentes de discovery, contrato externo ou implementação:
 
@@ -169,9 +222,13 @@ Cobertura temática não significa que todas as decisões já podem ser congelad
 - regras e limites de caixa/desconto;
 - CNPJs e topologia fiscal reais;
 - adquirente/TEF/Pix;
-- estratégia fiscal definitiva;
+- estratégia/provedor fiscal definitivo;
+- política real de reserva/encomenda/sinal;
+- frequência e processo real das viagens de compra;
+- número/WABA e processo atual de atendimento WhatsApp;
+- runtime final do agente (Mora próprio vs Meta Business Agent vs híbrido);
 - stack final de backend/ORM/auth/queue/cloud;
-- políticas/contratos atuais dos marketplaces no momento da integração;
+- políticas/contratos atuais dos marketplaces/WhatsApp no momento da integração;
 - schema SQL e OpenAPI executáveis;
 - RPO/RTO/SLO numéricos;
 - preços/planos do SaaS;
