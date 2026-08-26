@@ -6,6 +6,8 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 
 ## Comece aqui
 - [Visão Executiva](product/executive-overview.md)
+- [Cenário completo das lojas Mora no estado futuro](product/mora-reference-future-state.md)
+- [Fluxos técnicos end-to-end](architecture/end-to-end-flows.md)
 - [Discovery Operacional](discovery/operational-discovery.md)
 - [Discovery de WhatsApp, demanda e sourcing](discovery/conversational-commerce-discovery.md)
 - [Roadmap principal](roadmap/roadmap.md)
@@ -13,6 +15,8 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 
 ## Produto
 - [Visão](product/vision.md)
+- [Visão Executiva](product/executive-overview.md)
+- [Cenário de referência — lojas Mora no estado futuro](product/mora-reference-future-state.md)
 - [Escopo e não objetivos](product/scope-and-non-goals.md)
 - [Módulos e capacidades](product/modules.md)
 - [Personas e jornadas](product/personas-and-journeys.md)
@@ -21,6 +25,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 
 ## Arquitetura e SaaS
 - [Arquitetura do sistema](architecture/system-architecture.md)
+- [Fluxos técnicos end-to-end](architecture/end-to-end-flows.md)
 - [Monólito modular](architecture/modular-monolith.md)
 - [Contratos de API](architecture/api-contracts.md)
 - [Multi-tenancy](saas/multitenancy.md)
@@ -83,6 +88,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - [Discovery operacional das lojas](discovery/operational-discovery.md)
 - [Discovery de WhatsApp, demanda e sourcing](discovery/conversational-commerce-discovery.md)
 - [Visão executiva para negócio/família](product/executive-overview.md)
+- [Cenário completo das lojas Mora](product/mora-reference-future-state.md)
 - [Apresentação do projeto e portfólio](project/project-presentation-and-portfolio.md)
 - [Marca, naming e titularidade](project/branding-and-ownership.md)
 
@@ -90,6 +96,8 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 
 - `README.md` = visão e mapa do projeto.
 - `/docs` = verdade atual aprofundada.
+- `product/mora-reference-future-state.md` = exemplo de como todas as capacidades planejadas se conectam numa operação completa das lojas Mora.
+- `architecture/end-to-end-flows.md` = visão técnica dos mesmos fluxos atravessando módulos.
 - ADR = decisão arquitetural e trade-offs.
 - Runbook = operação, incidente e recuperação.
 - Changelog/release notes = história.
