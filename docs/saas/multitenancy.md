@@ -79,6 +79,51 @@ sessão autenticada
 → operação autorizada
 ```
 
+## Recommendation boundary
+
+Multi-tenancy também é uma **fronteira comercial**, não só de leitura CRUD.
+
+Um cliente conversando com a Organization A jamais deve receber como recomendação um produto, loja, listing ou estoque da Organization B.
+
+Isso vale mesmo quando:
+
+- ambos estão no mesmo banco PostgreSQL;
+- ambos usam o mesmo modelo de IA;
+- embeddings ficam no mesmo mecanismo de busca;
+- um marketplace público contém listings das duas empresas;
+- o item de B seria “mais parecido” ou mais barato.
+
+### Invariante
+
+```text
+recommendationCandidates.organizationId
+==
+conversation/website/channelConnection.organizationId
+```
+
+### Dentro do tenant
+
+A organização pode decidir se a recomendação procura:
+
+```text
+STORE_ONLY
+BRAND_ONLY
+ORGANIZATION
+```
+
+O padrão recomendado é permitir recuperação de venda em outras lojas/marcas **da mesma organização**, com transparência sobre local/fulfillment.
+
+### Vector search / IA
+
+Filtros de tenant não podem ser deixados para “o modelo obedecer ao prompt”. Devem existir em query/index/repository/policy determinística.
+
+Testar especificamente:
+
+- embedding search A nunca retorna B;
+- cache de recomendação inclui tenant;
+- fallback de busca não remove tenant filter;
+- agent tool não aceita `organizationId` arbitrário do LLM.
+
 ## Estratégia inicial de banco
 
 Preferência arquitetural:
@@ -119,7 +164,11 @@ Threats principais:
 - analytics misturando dados;
 - webhook/credential associado ao tenant errado;
 - logs administrativos expondo PII de outro cliente;
-- busca/autocomplete global involuntário.
+- busca/autocomplete global involuntário;
+- vector search/semantic search cross-tenant;
+- recommendation engine sugerindo concorrente;
+- CustomerRequest/SourcingRequest atravessando tenant;
+- marketplace connection resolvida para conta errada.
 
 ## Testes de isolamento
 
@@ -133,6 +182,9 @@ Criar uma fixture com tenants A e B e provar:
 - cache não retorna B;
 - upload/signed URL de A não acessa B;
 - export A contém somente A;
+- recomendação A contém somente A;
+- busca por imagem enviada em A não consulta produtos de B;
+- ChannelListing de B não é oferecido ao cliente de A;
 - administração/support respeita autorização especial auditada.
 
 ## Membership multi-organização
@@ -158,8 +210,24 @@ commissions.enabled
 blindCashClosing.enabled
 websites.enabled
 marketplaces.enabled
+whatsappCommerce.enabled
+visualSearch.enabled
+customerSourcing.enabled
 inventoryTransfers.enabled
 ```
+
+## Dados globais da plataforma
+
+A plataforma pode precisar de dados operacionais globais para billing, segurança, métricas e suporte. Isso não concede ao produto permissão de usar dados comerciais de um tenant para vender produtos de outro.
+
+Qualquer aprendizado agregado entre tenants exige:
+
+- finalidade definida;
+- contrato/base legal adequada;
+- anonimização/agregação quando possível;
+- revisão de privacidade;
+- proteção contra reidentificação;
+- nunca transformar dado privado de concorrente em recomendação direta.
 
 ## Deleção e offboarding de tenant
 
@@ -168,10 +236,11 @@ Excluir organização exige lifecycle de:
 - DB;
 - mídia original/derivada;
 - cache;
-- índices de busca;
+- índices de busca/vector stores;
 - analytics;
 - tokens/credentials;
 - webhooks;
+- CustomerRequests/SourcingRequests;
 - exports temporários;
 - backups conforme retention.
 
@@ -187,3 +256,5 @@ Cliente deve conseguir exportar seus dados autorizados em formatos versionados. 
 - [Plataforma e onboarding](platform-and-onboarding.md)
 - [Segurança](../security/security-architecture.md)
 - [Data lifecycle](../data/data-lifecycle.md)
+- [Omnichannel](../commerce/omnichannel.md)
+- [Demanda e Sourcing](../commerce/customer-demand-and-sourcing.md)
