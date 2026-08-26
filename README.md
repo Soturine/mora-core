@@ -1,6 +1,9 @@
 <p align="center">
-  <img src="./assets/brand/mora-core-logo.png#gh-dark-mode-only" alt="Mora Core" width="560" />
-  <img src="./assets/brand/mora-core-logo-dark.png#gh-light-mode-only" alt="Mora Core" width="560" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/mora-core-logo.png">
+    <source media="(prefers-color-scheme: light)" srcset="assets/brand/mora-core-logo-dark.png">
+    <img src="assets/brand/mora-core-logo-dark.png" alt="Mora Core" width="560">
+  </picture>
 </p>
 
 <p align="center"><strong>Sistema operacional para o varejo físico e digital.</strong></p>
