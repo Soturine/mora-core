@@ -82,6 +82,45 @@ necessidade de compra
 → etiquetas/fotos/publicação
 ```
 
+## Demanda do cliente como entrada para compras
+
+Compras não devem depender apenas do feeling do comprador ou de histórico de venda. O Mora Core também pode registrar **demanda não atendida** proveniente de site, WhatsApp, PDV ou outros canais.
+
+Exemplo:
+
+```text
+cliente pede vestido preto M
+→ estoque = 0
+→ alternativas não converteram
+→ CustomerRequest / DemandSignal
+→ possível SourcingRequest
+→ próxima compra/viagem
+```
+
+Isso não significa compra automática. O sistema gera informação e sugestão; comprador/proprietário continua aprovando conforme budget, fornecedor e estratégia.
+
+Ver [Demanda, Encomendas e Sourcing](../commerce/customer-demand-and-sourcing.md).
+
+## Viagem de compras / sourcing
+
+A operação pode agrupar solicitações em uma `ProcurementTrip`, por exemplo uma ida a São Paulo.
+
+O comprador no mobile pode ter:
+
+- lista de solicitações;
+- fotos de referência;
+- tamanho/cor/atributos;
+- teto de custo autorizado;
+- prioridade;
+- cliente vinculado quando necessário;
+- fornecedor;
+- status `encontrado/não encontrado`;
+- captura de foto/preço de candidato.
+
+Um `SourcingCandidate` ainda não é `Product`; só vira produto/variante após aprovação/cadastro.
+
+Se uma cliente já confirmou uma encomenda, o recebimento pode criar uma `Reservation` para que a unidade não seja vendida a outra pessoa antes do prazo acordado.
+
 ## Recebimento mobile
 
 O operador pode usar o app:
@@ -125,6 +164,24 @@ productId
 variantId?
 lastSeenAt
 ```
+
+## Catálogo B2B de fornecedor
+
+Se futuramente um fornecedor disponibilizar API/arquivo/catálogo estruturado, criar `SupplierCatalogAdapter` isolado do catálogo público.
+
+Possíveis dados:
+
+- referência do fornecedor;
+- atributos;
+- custo;
+- disponibilidade B2B;
+- lote/grade;
+- prazo;
+- mídia de referência autorizada.
+
+Esses dados não entram automaticamente no `Product Truth`; precisam de mapping/revisão.
+
+Um agente de compras autorizado pode usar pesquisa externa para descobrir fornecedores, mas isso é **backoffice**. Resultados externos/concorrentes nunca podem ser sugeridos diretamente ao consumidor como alternativa de compra.
 
 ## Custo
 
@@ -192,9 +249,29 @@ Futuro:
 - sell-through;
 - aging;
 - retorno por coleção/fornecedor;
+- demanda não atendida;
+- taxa de sourcing convertido em venda;
+- fornecedor que mais resolve solicitações;
 - sugestão de reposição.
 
 Previsão/ML só após histórico confiável.
+
+## Sugestão de compra
+
+Uma `PurchaseSuggestion` pode combinar, quando houver dados confiáveis:
+
+```text
+vendas reais
++ demanda não atendida
++ estoque atual
++ estoque em trânsito
++ reservas
++ lead time
++ sazonalidade
++ budget
+```
+
+A saída é uma **sugestão explicável**, nunca uma ordem de compra autônoma produzida por LLM.
 
 ## Segurança
 
@@ -203,7 +280,10 @@ Previsão/ML só após histórico confiável.
 - alterações de receipt auditadas;
 - tenant/store scope;
 - anexos/XML com validação;
-- não executar conteúdo de documentos.
+- não executar conteúdo de documentos;
+- CustomerRequest/SourcingRequest nunca atravessa `organizationId`;
+- comprador vê somente PII necessária da cliente;
+- pesquisa externa de fornecedor é capability administrativa separada.
 
 ## Critérios de teste
 
@@ -214,7 +294,10 @@ Previsão/ML só após histórico confiável.
 - mapping correto;
 - estoque muda exatamente uma vez;
 - tenant isolation;
-- custo oculto para perfil não autorizado.
+- custo oculto para perfil não autorizado;
+- sourcing de A não aparece em B;
+- reserva de item encomendado após receipt;
+- demanda não atendida não é contada como venda.
 
 ## Questões do Discovery
 
@@ -227,6 +310,11 @@ Previsão/ML só após histórico confiável.
 - há consignação?
 - há devolução para fornecedor?
 - precisa controlar contas a pagar no Core ou integrar inicialmente?
+- como funcionam as viagens de compra?
+- clientes já pedem para trazer mercadorias específicas?
+- a loja aceita sinal/depósito para encomenda?
+- qual prazo de reserva após a mercadoria chegar?
+- fornecedores enviam catálogo/grade por WhatsApp, planilha, site ou API?
 
 ## Relacionados
 
@@ -234,3 +322,5 @@ Previsão/ML só após histórico confiável.
 - [Estoque](inventory.md)
 - [Mobile](../mobile/mobile-app.md)
 - [Modelo de domínio](domain-model.md)
+- [Demanda, Encomendas e Sourcing](../commerce/customer-demand-and-sourcing.md)
+- [WhatsApp Commerce Agent](../commerce/whatsapp-commerce-agent.md)
