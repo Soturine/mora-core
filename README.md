@@ -1,9 +1,6 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/mora-core-logo.png">
-    <source media="(prefers-color-scheme: light)" srcset="assets/brand/mora-core-logo-dark.png">
-    <img src="assets/brand/mora-core-logo-dark.png" alt="Mora Core" width="720">
-  </picture>
+  <img src="./assets/brand/mora-core-logo.png#gh-dark-mode-only" alt="Mora Core" width="560" />
+  <img src="./assets/brand/mora-core-logo-dark.png#gh-light-mode-only" alt="Mora Core" width="560" />
 </p>
 
 <p align="center"><strong>Sistema operacional para o varejo físico e digital.</strong></p>
@@ -12,9 +9,9 @@
 
 # Mora Core
 
-O **Mora Core** é uma plataforma proprietária, preparada para evoluir como SaaS, projetada para centralizar catálogo, produtos, variantes/SKUs, estoque, compras, vendas, PDV, caixas, vendedores, comissões, sites, aplicativo mobile, IA aplicada ao catálogo, analytics, integrações e comércio omnichannel.
+O **Mora Core** é uma plataforma proprietária, preparada para evoluir como SaaS, projetada para centralizar catálogo, produtos, variantes/SKUs, estoque, compras, vendas, PDV, caixas, vendedores, comissões, sites, aplicativo mobile, IA, commerce conversacional, analytics, integrações e operação omnichannel.
 
-As primeiras operações reais de referência são as lojas Mora. A arquitetura, porém, não assume que a Mora será a única organização: desde o início, o sistema é pensado para atender futuramente lojas independentes, marcas, grupos com múltiplos estabelecimentos e operações multiempresa com isolamento forte de dados.
+As primeiras operações reais de referência são as lojas Mora. A arquitetura, porém, não assume que a Mora será a única organização: desde o início, o sistema é pensado para atender futuramente lojas independentes, marcas e grupos com múltiplos estabelecimentos, sempre com isolamento forte de dados.
 
 > [!IMPORTANT]
 > **Estado atual:** este repositório está em fase `documentation-first`. Os documentos registram visão, domínio, arquitetura, riscos, contratos e roadmap. Eles **não significam que todas as funcionalidades descritas já existem**. Cada milestone deverá declarar honestamente `implementado`, `parcial`, `experimental`, `planejado`, `adiado` ou `não validado`.
@@ -41,17 +38,19 @@ Catálogo + variantes
 Estoque
         ↓
 Publicação
-   ┌────┼───────────────┬──────────────┐
-   │    │               │              │
- PDV  Site próprio  Marketplaces   Social commerce
-   │    │               │              │
-   └────┴───────────────┴──────────────┘
+   ┌────┼──────────────┬──────────────┬───────────────┐
+   │    │              │              │               │
+ PDV  Site         WhatsApp      Marketplaces    Social commerce
+   │    │              │              │               │
+   └────┴──────────────┴──────────────┴───────────────┘
         ↓
 Pedidos / Vendas
         ↓
 Movimentações de estoque
         ↓
 Caixa / comissões / analytics
+        ↓
+Demanda não atendida → compras / reposição
 ```
 
 A proposta de longo prazo não é ser apenas “um ERP com PDV”, mas um **sistema operacional para o varejo**, capaz de levar o lojista da entrada da mercadoria até a venda física e digital sem cadastrar a mesma informação em vários lugares.
@@ -77,6 +76,7 @@ A proposta de longo prazo não é ser apenas “um ERP com PDV”, mas um **sist
 - Fotografia de produto e upload de mídia.
 - Consulta de estoque e inventário.
 - Recebimento e transferência entre lojas.
+- Modo de compras/sourcing para viagens a fornecedores.
 - Dashboard para vendedores, gerentes e proprietários.
 - Fluxos offline quando houver justificativa operacional.
 
@@ -85,30 +85,77 @@ A proposta de longo prazo não é ser apenas “um ERP com PDV”, mas um **sist
 - Remoção/limpeza de fundo e geração de derivados para catálogo.
 - Geração opcional de imagens com modelo virtual usando a roupa real, sempre com proveniência e revisão humana.
 - Sugestões de título, descrição, categoria, tags e conteúdo por canal.
+- Busca visual quando o cliente envia uma foto e pergunta se há algo parecido.
+- Assistência à conversa de venda, sem transformar o LLM em autoridade transacional.
 - IA nunca é autoridade para preço, estoque, cálculo financeiro, regras fiscais, autorização ou invariantes.
+
+### Commerce conversacional / WhatsApp
+- Site → WhatsApp com produto/variante contextualizados.
+- Consulta de preço e estoque real.
+- Personal shopper conversacional.
+- Fotos, comparação e alternativas.
+- Carrinho e reserva de estoque.
+- Cross-sell/upsell responsáveis.
+- Handoff para funcionária com resumo da conversa.
+- Back-in-stock e wishlist.
+- Pagamento por provider/PIX/link ou recurso do WhatsApp quando aplicável.
+- Baixa de estoque somente após confirmação determinística.
+- Fiscal e fulfillment coordenados pelo Core.
+
+**Regra não negociável:** recomendações e alternativas são restritas à mesma `Organization`. O Mora Core não sugere lojas concorrentes nem produtos de outros tenants.
+
+### Demanda e sourcing
+
+Se uma cliente enviar uma foto e a loja não tiver o produto, o sistema pode:
+
+```text
+buscar alternativas da própria Organization
+→ registrar o que a cliente procura
+→ agrupar demanda não atendida
+→ incluir em uma próxima compra/viagem
+→ fotografar candidato no fornecedor
+→ pedir aprovação da cliente
+→ comprar/receber
+→ reservar
+→ avisar que chegou
+```
+
+Isso transforma “não temos” em informação útil para compras e em uma possível venda futura, sem prometer mercadoria antes de confirmação.
 
 ### PIM / OMS / Omnichannel
 - Produto canônico como fonte de verdade.
 - Listings por canal e overrides específicos.
 - Sites próprios.
+- WhatsApp como canal transacional.
 - Adapters planejados para TikTok Shop, Mercado Livre, Shopee e outros canais.
 - Ingestão de pedidos e sincronização de estoque.
 - Reserva de estoque para evitar overselling.
 - Validação de requisitos por canal antes de publicar.
 - Webhooks e integrações idempotentes.
+- Um listing externo só pode ser oferecido ao consumidor se pertencer à mesma organização.
 
 ### Plataforma de sites
 - Cliente sem site pode criar um storefront dentro do Mora Core.
 - Temas, identidade visual, navegação, homepage, catálogo, categorias e páginas de produto.
 - Domínio próprio em fase futura.
 - Catálogo/site alimentado pela mesma fonte de dados do ERP.
+- CTAs de WhatsApp, busca visual, back-in-stock e pedido de estilo/encomenda.
+
+### Fiscal e pagamentos
+- Pagamentos separados de venda/caixa.
+- Comprovante visual não confirma pagamento automaticamente.
+- Payment adapters, webhooks, idempotência e reconciliação.
+- Fiscal atrás de `FiscalPort`, começando preferencialmente pelo ERP/provedor existente.
+- NF-e/NFC-e integráveis por provedores ou WebServices oficiais aplicáveis; NFS-e possui APIs próprias para serviços.
+- Certificados, XML, DANFE, contingência e legal entity tratados como domínio de alto risco.
 
 ### SaaS
 - Multi-tenancy desde o modelo inicial.
 - Uma organização pode ter várias marcas, CNPJs, lojas, depósitos, sites e canais.
-- Isolamento forte entre tenants.
+- Isolamento forte entre tenants inclusive em busca por imagem, embeddings, recomendações e agents.
 - Entitlements e billing do SaaS separados dos pagamentos das vendas do lojista.
 - Importação/exportação e estratégia de migração para evitar lock-in agressivo.
+- Onboarding futuro de WhatsApp por conexão própria de cada tenant.
 - Operação em nuvem com backup, recuperação e observabilidade.
 
 ## Direção arquitetural
@@ -120,14 +167,15 @@ A arquitetura padrão é um **monólito modular**, com limites fortes entre mód
                             │
                     Identidade / Tenancy
                             │
-        ┌───────────────────┼───────────────────┐
-        │                   │                   │
-     ERP Core            Commerce           Experiência
-        │                   │                   │
- Catálogo/Estoque      PIM / OMS         Admin / Mobile
- Vendas/Caixa          Canais            PDV / Storefront
- Comissões             Integrações       Analytics
-        └───────────────────┼───────────────────┘
+        ┌───────────────────┼────────────────────┐
+        │                   │                    │
+     ERP Core            Commerce            Experiência
+        │                   │                    │
+ Catálogo/Estoque      PIM / OMS          Admin / Mobile
+ Compras/Sourcing      WhatsApp Agent     PDV / Storefront
+ Vendas/Caixa          Canais             Analytics
+ Comissões             Integrações
+        └───────────────────┼────────────────────┘
                             │
                       Application Core
                             │
@@ -144,10 +192,12 @@ Regras centrais:
 - regra de negócio fica no domínio/aplicação;
 - PostgreSQL participa da integridade com constraints e transações reais;
 - estoque é representado por **movimentações append-only + saldo derivado/materializado**, não por alteração arbitrária de quantidade;
-- browser e app mobile nunca são autoridade para estoque, preço, comissão, tenant ou permissão;
+- browser, WhatsApp e app mobile nunca são autoridade para estoque, preço, comissão, tenant ou permissão;
+- recomendação/visual search sempre é tenant-scoped;
 - integrações externas ficam atrás de adapters;
 - secrets nunca ficam no frontend, APK, Git ou logs;
 - APIs usam contratos explícitos, semântica HTTP adequada e limites de recursos;
+- IA usa tools estreitas e validadas; não recebe SQL/HTTP/secrets irrestritos;
 - Kafka, Kubernetes, CQRS, Event Sourcing, Redis, microserviços e outras complexidades entram apenas se um problema real justificar.
 
 ## Estrutura do repositório
@@ -204,6 +254,7 @@ Comece pelo [índice da documentação](docs/index.md).
 - [Multi-tenancy](docs/saas/multitenancy.md)
 - [Modelo de domínio](docs/domain/domain-model.md)
 - [Estoque](docs/domain/inventory.md)
+- [Compras e fornecedores](docs/domain/purchasing-and-suppliers.md)
 - [Vendas, caixa e comissões](docs/domain/sales-cash-commissions.md)
 - [Fiscal e pagamentos](docs/domain/fiscal-and-payments.md)
 - [Contratos de API](docs/architecture/api-contracts.md)
@@ -216,7 +267,10 @@ Comece pelo [índice da documentação](docs/index.md).
 - [Pipeline de mídia com IA](docs/ai/media-pipeline.md)
 - [Taxonomia do catálogo](docs/commerce/catalog-taxonomy.md)
 - [Omnichannel, PIM e OMS](docs/commerce/omnichannel.md)
+- [WhatsApp Commerce Agent](docs/commerce/whatsapp-commerce-agent.md)
+- [Demanda, encomendas e sourcing](docs/commerce/customer-demand-and-sourcing.md)
 - [Marketplaces e canais](docs/integrations/marketplaces.md)
+- [Integração fiscal no Brasil](docs/integrations/fiscal-brazil.md)
 - [Estratégia de integração com Bling](docs/integrations/bling.md)
 
 ### Engenharia, QA, segurança e operação
@@ -232,7 +286,9 @@ Comece pelo [índice da documentação](docs/index.md).
 
 ### Planejamento e pesquisa
 - [Discovery operacional](docs/discovery/operational-discovery.md)
-- [Benchmark competitivo](docs/research/competitive-benchmark.md)
+- [Roadmap de commerce conversacional](docs/roadmap/conversational-commerce-roadmap.md)
+- [Benchmark competitivo — ERP/PDV](docs/research/competitive-benchmark.md)
+- [Benchmark de commerce conversacional](docs/research/conversational-commerce-benchmark.md)
 - [Riscos e questões em aberto](docs/roadmap/risks-and-open-questions.md)
 - [ADRs](docs/adr/README.md)
 
@@ -255,14 +311,16 @@ A [Engineering Constitution](docs/engineering/constitution.md) exige, entre outr
 
 ## Estratégia incremental de implementação
 
-1. **Fundação:** identidade, organizações, lojas, permissões, catálogo, variantes, ledger de estoque e auditoria.
-2. **Mobile operacional:** consulta, scanner, entrada de produto, fotos, etiquetas e inventário.
-3. **Integração dos sites:** os storefronts passam a consumir catálogo/estoque do Mora Core.
-4. **Vendas/PDV:** vendas, pagamentos, caixa, trocas, devoluções e comissões.
-5. **Analytics:** giro, aging, curva ABC, performance por vendedor, loja e canal.
-6. **IA:** mídia e conteúdo assistidos, com proveniência, limites e revisão humana.
-7. **Omnichannel:** adapters, pedidos externos e sincronização de estoque.
-8. **SaaS:** onboarding, billing/entitlements, import/export, suporte e hardening multi-tenant.
+1. **Discovery:** mapear a operação real, WhatsApp, compras, caixa, fiscal e Bling.
+2. **Fundação:** identidade, organizações, lojas, permissões, catálogo, variantes, ledger de estoque e auditoria.
+3. **Mobile operacional:** consulta, scanner, entrada de produto, fotos, etiquetas, inventário e sourcing.
+4. **Integração dos sites:** storefronts consumindo catálogo/estoque real e WhatsApp contextualizado.
+5. **Commerce conversacional:** catálogo, alternativas, busca por foto, demanda não atendida, carrinho/handoff.
+6. **Vendas/PDV:** vendas, pagamentos, caixa, trocas, devoluções e comissões.
+7. **Analytics:** giro, aging, curva ABC, demanda perdida, performance por vendedor, loja e canal.
+8. **IA:** mídia e conteúdo assistidos, com proveniência, limites e revisão humana.
+9. **Omnichannel:** adapters, pedidos externos e sincronização de estoque.
+10. **SaaS:** onboarding, billing/entitlements, import/export, WhatsApp por tenant, suporte e hardening multi-tenant.
 
 Veja o [roadmap completo](docs/roadmap/roadmap.md).
 
