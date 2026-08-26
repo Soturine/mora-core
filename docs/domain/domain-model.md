@@ -16,7 +16,8 @@ Definir linguagem comum entre negócio e software, evitando que conceitos difere
 - venda finalizada não é reescrita silenciosamente;
 - histórico preserva snapshots necessários;
 - integrações externas não definem o modelo interno;
-- fatos de produto são separados de conteúdo gerado por IA.
+- fatos de produto são separados de conteúdo gerado por IA;
+- recomendação, busca visual, conversa e sourcing são sempre tenant-scoped.
 
 ---
 
@@ -212,7 +213,7 @@ Transação de transferência entre locations, com estados quando necessário.
 
 ---
 
-# 5. Compras e recebimento
+# 5. Compras, demanda e sourcing
 
 ## `Supplier`
 
@@ -231,6 +232,54 @@ Produto/variante esperado, quantidade, custo esperado.
 Recebimento real, podendo ser parcial.
 
 Invariante: entrada de estoque acontece por documento/movimento rastreável, não por alteração direta de balance.
+
+## `CustomerRequest`
+
+Pedido explícito de cliente por um item/estilo que pode não existir ou não estar disponível no catálogo.
+
+Pode carregar:
+
+- produto/variante quando conhecidos;
+- foto de referência;
+- atributos desejados;
+- tamanho/cor;
+- quantidade;
+- faixa de preço;
+- prazo desejado;
+- origem da conversa/canal.
+
+Não representa venda nem obrigação de compra.
+
+## `DemandSignal`
+
+Sinal agregado de demanda não atendida, separado de venda real.
+
+Exemplos de outcome:
+
+```text
+OUT_OF_STOCK
+NO_MATCH
+SIZE_UNAVAILABLE
+COLOR_UNAVAILABLE
+SOURCING_REQUESTED
+CONVERTED_ALTERNATIVE
+```
+
+## `SourcingRequest`
+
+Decisão interna de avaliar/procurar mercadoria para atender demanda.
+
+## `ProcurementTrip`
+
+Agrupa atividades de compra em uma viagem/visita a fornecedores, sem hardcode de destino.
+
+## `SourcingCandidate`
+
+Opção encontrada antes de virar produto/compra efetiva.
+
+## `PurchaseSuggestion`
+
+Sugestão de abastecimento derivada de dados como vendas, demanda perdida, estoque, lead time e budget. Exige aprovação humana conforme policy.
 
 ---
 
@@ -273,7 +322,7 @@ Snapshots preservam história quando catálogo muda.
 
 ## `Payment`
 
-Um ou vários pagamentos ligados à venda.
+Um ou vários pagamentos ligados à venda/pedido conforme fluxo.
 
 ## `Return` / `ReturnItem`
 
@@ -327,7 +376,7 @@ Histórico não é recalculado automaticamente quando plano futuro muda.
 
 ---
 
-# 9. Clientes
+# 9. Clientes, relacionamento e interesse
 
 ## `Customer`
 
@@ -335,9 +384,74 @@ Identificação opcional conforme finalidade.
 
 Separar dados necessários para venda/fiscal de dados de marketing/relacionamento e consentimentos.
 
+## `CustomerIdentity`
+
+Liga o mesmo cliente a identificadores de canal quando houver evidência suficiente.
+
+```text
+customerId
+organizationId
+provider
+externalId
+verifiedAt?
+```
+
+Não fazer merge agressivo entre WhatsApp, e-mail, marketplace, site e POS.
+
+## `Wishlist` / `WishlistItem`
+
+Itens existentes que o cliente quer acompanhar.
+
+## `BackInStockSubscription`
+
+Interesse em ser avisado quando produto/variante voltar ao estoque, com consentimento/policy apropriados.
+
 ---
 
-# 10. Commerce / canais
+# 10. Conversas e atendimento
+
+## `Conversation`
+
+Sessão de atendimento em WhatsApp, site ou futuro canal conversacional.
+
+```text
+Conversation
+├── id
+├── organizationId
+├── channel
+├── channelConnectionId
+├── externalThreadId
+├── customerId?
+├── storeContextId?
+├── status
+├── mode
+├── priority
+├── assignedEmployeeId?
+└── timestamps
+```
+
+Modes possíveis:
+
+```text
+AI
+HUMAN
+HYBRID
+PAUSED_AI
+```
+
+## `ConversationMessage`
+
+Mensagem recebida/enviada com tipo, referência externa e mídia opcional.
+
+## `ConversationAssignment`
+
+Atribuição operacional da conversa a uma funcionária.
+
+**Não equivale automaticamente a `Sale.sellerId`.**
+
+---
+
+# 11. Commerce / canais
 
 ## `SalesChannel`
 
@@ -346,6 +460,7 @@ Exemplos:
 ```text
 POS
 WEBSITE
+WHATSAPP
 TIKTOK_SHOP
 MERCADO_LIVRE
 SHOPEE
@@ -363,9 +478,13 @@ Representação de produto em um canal.
 
 Mapping da variante canônica para variante externa.
 
+## `Cart` / `CartItem`
+
+Carrinho canônico que pode ser iniciado no site ou conversa.
+
 ## `Order`
 
-Pedido canônico vindo do site/marketplace.
+Pedido canônico vindo do site/WhatsApp/marketplace.
 
 ## `OrderItem`
 
@@ -373,11 +492,15 @@ Mapping para produto/variante.
 
 ## `Fulfillment`
 
-Separação/envio/tracking.
+Separação/envio/tracking/retirada.
+
+### Invariante de recomendação
+
+Qualquer recomendação, busca visual ou fallback de canal para consumidor só pode considerar recursos da mesma `Organization`.
 
 ---
 
-# 11. Storefront
+# 12. Storefront
 
 ## `Website`
 
@@ -393,7 +516,7 @@ Blocos seguros configuráveis, não HTML/JS arbitrário.
 
 ---
 
-# 12. Media e IA
+# 13. Media e IA
 
 ## `MediaAsset`
 
@@ -409,7 +532,17 @@ Texto/imagem derivada, separada de Product Truth.
 
 ---
 
-# 13. Plataforma SaaS
+# 14. Fiscal
+
+## `FiscalDocument`
+
+Representa referência/status do documento fiscal correspondente à venda/pedido/legal entity.
+
+Implementação concreta fica atrás de `FiscalPort` e adapter.
+
+---
+
+# 15. Plataforma SaaS
 
 ## `Subscription`
 
@@ -429,7 +562,7 @@ Rollout técnico, separado de entitlement.
 
 ---
 
-# 14. Integrações e confiabilidade
+# 16. Integrações e confiabilidade
 
 ## `IntegrationInbox`
 
@@ -449,7 +582,7 @@ Processamento assíncrono com estado/retry quando infraestrutura adotar modelo p
 
 ---
 
-# 15. Auditoria
+# 17. Auditoria
 
 ## `AuditEvent`
 
@@ -475,7 +608,12 @@ Audit não substitui domain ledger e não é debug log.
 12. IA não altera Product Truth sem aprovação/fluxo explícito;
 13. external ID sozinho não autoriza tenant;
 14. estado crítico possui transitions permitidas;
-15. correções financeiras/estoque deixam rastro.
+15. correções financeiras/estoque deixam rastro;
+16. busca/recomendação nunca atravessa `Organization`;
+17. `ConversationAssignment` não concede comissão automaticamente;
+18. `DemandSignal` não é venda;
+19. `CustomerRequest` não é promessa de compra/reposição;
+20. `SourcingCandidate` não vira produto/estoque até fluxo de compra/recebimento apropriado.
 
 # Estados que exigem state machines
 
@@ -487,10 +625,14 @@ Ao implementar, formalizar pelo menos:
 - CommissionEntry/Statement;
 - StockTransfer;
 - Reservation;
-- Order/Fulfillment;
+- Cart/Order/Fulfillment;
 - ChannelListing;
+- Conversation;
+- CustomerRequest/SourcingRequest;
+- ProcurementTrip;
 - Import/Export job;
 - Media processing;
+- FiscalDocument;
 - Onboarding.
 
 Evitar combinações de booleanos como `active=true, published=false, archived=true` sem semântica.
@@ -536,14 +678,23 @@ Não depender apenas de validação frontend.
 - estados finais de troca/devolução;
 - modelo fiscal final;
 - relação Store/StockLocation real;
-- customer data necessária.
+- customer data necessária;
+- política real de reserva;
+- lifecycle de conversa/mídia de cliente;
+- regras de sourcing, sinal e cancelamento;
+- atribuição de venda oriunda de atendimento híbrido IA/humano.
 
-Todas devem sair do [Discovery](../discovery/operational-discovery.md).
+Todas devem sair do [Discovery](../discovery/operational-discovery.md) e, para WhatsApp/sourcing, do [Discovery Conversacional](../discovery/conversational-commerce-discovery.md).
 
 ## Relacionados
 
+- [Cenário completo da Mora](../product/mora-reference-future-state.md)
+- [Fluxos end-to-end](../architecture/end-to-end-flows.md)
 - [Estoque](inventory.md)
+- [Compras e fornecedores](purchasing-and-suppliers.md)
 - [Vendas/caixa/comissões](sales-cash-commissions.md)
 - [Identidade](identity-employees-permissions.md)
+- [Operação de conversas](../commerce/conversation-operations.md)
+- [Demanda e sourcing](../commerce/customer-demand-and-sourcing.md)
 - [Omnichannel](../commerce/omnichannel.md)
 - [Multi-tenancy](../saas/multitenancy.md)
