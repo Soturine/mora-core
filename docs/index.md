@@ -22,6 +22,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 
 ## Domínio
 - [Modelo de domínio](domain/domain-model.md)
+- [Identidade, funcionários e permissões](domain/identity-employees-permissions.md)
 - [Estoque](domain/inventory.md)
 - [Vendas, caixa e comissões](domain/sales-cash-commissions.md)
 - [Fiscal e pagamentos](domain/fiscal-and-payments.md)
@@ -37,12 +38,12 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - [Aplicativo mobile](mobile/mobile-app.md)
 - [Barcode, etiquetas e scanner](mobile/barcodes-and-scanning.md)
 - [Governança de IA](ai/ai-governance.md)
-- [Pipeline de mídia](ai/media-pipeline.md)
+- [Pipeline de mídia e IA](ai/media-pipeline.md)
 
 ## Segurança, QA e engenharia
 - [Engineering Constitution](engineering/constitution.md)
 - [Segurança e threat model](security/security-architecture.md)
-- [Identidade, RBAC e auditoria](security/identity-rbac-audit.md)
+- [Identidade, RBAC e auditoria — visão de segurança](security/identity-rbac-audit.md)
 - [QA e testes](qa/test-strategy.md)
 - [DevOps / DevSecOps](devops/devsecops.md)
 - [SRE e AIOps](operations/sre-aiops.md)
@@ -53,16 +54,24 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - [Import/export/migração](data/import-export-migration.md)
 - [Acessibilidade e UX](ux/accessibility-and-design.md)
 
-## Planejamento e pesquisa
+## Planejamento, rastreabilidade e pesquisa
 - [Roadmap](roadmap/roadmap.md)
 - [Riscos e questões em aberto](roadmap/risks-and-open-questions.md)
 - [Cobertura e incompletudes documentais](roadmap/documentation-coverage.md)
+- [Matriz de rastreabilidade dos requisitos discutidos](roadmap/requirements-traceability.md)
 - [Benchmark competitivo](research/competitive-benchmark.md)
 - [Landscape de mercado](research/market-landscape.md)
 - [ADRs](adr/README.md)
 
-## Convenções
+## Como interpretar esta documentação
 
-README = visão/marcador de entrada. `/docs` = verdade atual aprofundada. ADR = decisão. Runbook = operação. Changelog/release notes = história. Status: `implementado`, `parcial`, `experimental`, `planejado`, `adiado`, `não validado`.
+- `README.md` = visão e mapa do projeto.
+- `/docs` = verdade atual aprofundada.
+- ADR = decisão arquitetural e trade-offs.
+- Runbook = operação, incidente e recuperação.
+- Changelog/release notes = história.
+- Matriz de rastreabilidade = prova de cobertura temática das decisões/requisitos discutidos.
 
-Documentos relacionados devem possuir links entre si e ser atualizados junto com comportamento/decisões.
+Status permitidos: `implementado`, `parcial`, `experimental`, `planejado`, `adiado`, `não validado`.
+
+Documentos relacionados devem possuir links entre si e ser atualizados junto com comportamento e decisões. Nenhum documento de visão pode ser usado como prova de que uma feature já existe.
