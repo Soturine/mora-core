@@ -132,6 +132,93 @@ A página suporta:
 
 Zoom avançado pertence à página individual, não ao card de catálogo. Desktop pode usar hover/focus com região ampliada + viewer; mobile usa pinch/pan/double tap no viewer, preservando scroll natural fora dele.
 
+## Commerce conversacional integrado ao site
+
+O site deve funcionar como ponto de entrada para o mesmo commerce agent do WhatsApp, sem duplicar regras.
+
+CTAs possíveis:
+
+```text
+[ Comprar pelo WhatsApp ]
+[ Perguntar sobre este produto ]
+[ Encontrar algo parecido ]
+[ Enviar uma foto ]
+[ Avise-me quando voltar ]
+[ Quero pedir este estilo ]
+```
+
+### Contexto seguro
+
+Ao abrir uma conversa, o site envia somente contexto identificável/assinado. O backend reconsulta:
+
+- produto;
+- variante;
+- preço;
+- publicação;
+- disponibilidade;
+- organização.
+
+Nunca confiar em preço/estoque vindos do browser.
+
+### Busca por imagem
+
+O cliente pode enviar uma foto no site.
+
+```text
+upload validado
+→ AI/visual features
+→ tenant-scoped search
+→ produtos SOMENTE da mesma Organization
+```
+
+Se não houver resultado:
+
+> “Ainda não encontrei algo assim no nosso catálogo. Quer registrar o que procura para a equipe avaliar?”
+
+Pode criar `CustomerRequest` com consentimento, sem prometer que a loja irá comprar.
+
+### Sem estoque
+
+A UI não precisa simplesmente mostrar “indisponível”. Pode oferecer, conforme policy:
+
+- mesma variante em outra loja da organização;
+- outra cor/tamanho válido;
+- alternativas semelhantes da organização;
+- back-in-stock;
+- pedido/encomenda para avaliação;
+- falar com atendente.
+
+Nunca sugerir concorrentes ou produtos de outro tenant.
+
+## Carrinho e WhatsApp
+
+Dois fluxos podem coexistir:
+
+```text
+Produto → WhatsApp → agente monta Cart
+```
+
+ou
+
+```text
+Site → Cart → Finalizar pelo WhatsApp
+```
+
+O carrinho é canônico no Mora Core. WhatsApp e site são interfaces/canais.
+
+## Canais próprios como continuidade de compra
+
+Se a mesma `Organization` possui uma loja oficial conectada em Mercado Livre, Shopee ou TikTok Shop, o storefront/agente pode oferecer esse listing quando uma policy comercial permitir.
+
+Pré-condições:
+
+- mesmo `organizationId`;
+- `ChannelConnection` autorizada;
+- listing ativo;
+- preço/frete/status consultados do canal apropriado.
+
+O storefront **não é comparador de preço de concorrentes**.
+
 ## Novidades
 
 Não usar `updatedAt` como proxy de novidade. Regra deve considerar `publishedAt` ou `firstAvailableAt` conforme definição futura.
@@ -170,6 +257,8 @@ Produto publicado/real pode possuir title/meta/canonical/OpenGraph/schema.org co
 - prefetch medido;
 - evitar biblioteca pesada quando componente simples atende.
 
+Busca visual/upload precisa de limites de tamanho, formatos e processamento assíncrono quando necessário.
+
 ## Acessibilidade
 
 - semântica HTML;
@@ -181,7 +270,9 @@ Produto publicado/real pode possuir title/meta/canonical/OpenGraph/schema.org co
 - zoom de navegador não bloqueado;
 - touch targets adequados;
 - reduced motion;
-- modal/viewer com Escape, focus management e restore focus.
+- modal/viewer com Escape, focus management e restore focus;
+- fallback textual para recursos baseados em imagem;
+- não exigir WhatsApp como único caminho de contato quando a página precisa continuar acessível.
 
 ## Segurança
 
@@ -191,11 +282,16 @@ Produto publicado/real pode possuir title/meta/canonical/OpenGraph/schema.org co
 - CSP/headers quando aplicável;
 - cookies/sessões seguros se checkout/login existir;
 - frontend nunca consulta Bling/marketplace diretamente;
-- Catalog API expõe somente dados públicos permitidos.
+- Catalog API expõe somente dados públicos permitidos;
+- upload do cliente é não confiável;
+- busca/recomendação carrega `organizationId` derivado do website/host configurado, não do input livre;
+- IDs de produto de outro tenant falham fechado.
 
 ## SaaS e domínio
 
 Primeiro pode existir subdomínio da plataforma. Custom domain exige verificação de ownership, TLS e operação segura de DNS/certificados.
+
+O host/domínio resolve inequivocamente para `Website → Organization/Brand`. Cache e CDN também precisam dessa fronteira.
 
 ## Integração com os sites atuais
 
@@ -210,8 +306,38 @@ site com dados estáticos
 
 Sem reescrever o site inteiro antes do backend existir.
 
+A primeira evolução comercial pode ser:
+
+```text
+site atual
+→ página individual de produto
+→ disponibilidade real
+→ WhatsApp contextualizado
+→ agente/handoff
+```
+
+antes de checkout próprio completo.
+
+## Analytics
+
+Eventos possíveis:
+
+- product viewed;
+- variant selected;
+- WhatsApp CTA clicked;
+- visual search started;
+- recommendation shown;
+- back-in-stock requested;
+- CustomerRequest created;
+- add to cart;
+- checkout/handoff.
+
+Não coletar PII/sensibilidade além da finalidade.
+
 ## Relacionados
 
+- [WhatsApp Commerce Agent](../commerce/whatsapp-commerce-agent.md)
+- [Demanda, Encomendas e Sourcing](../commerce/customer-demand-and-sourcing.md)
 - [Taxonomia](../commerce/catalog-taxonomy.md)
 - [Omnichannel](../commerce/omnichannel.md)
 - [Mídia/IA](../ai/media-pipeline.md)
