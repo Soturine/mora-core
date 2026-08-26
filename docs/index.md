@@ -30,6 +30,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 ## Catálogo, commerce e canais
 - [Taxonomia do catálogo](commerce/catalog-taxonomy.md)
 - [PIM, OMS e omnichannel](commerce/omnichannel.md)
+- [WhatsApp Commerce Agent — vendas conversacionais com IA](commerce/whatsapp-commerce-agent.md)
 - [Marketplaces](integrations/marketplaces.md)
 - [Bling](integrations/bling.md)
 - [Confiabilidade de integrações](integrations/reliability-patterns.md)
@@ -61,7 +62,14 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - [Matriz de rastreabilidade dos requisitos discutidos](roadmap/requirements-traceability.md)
 - [Benchmark competitivo](research/competitive-benchmark.md)
 - [Landscape de mercado](research/market-landscape.md)
+- [Snapshot de políticas dos canais](research/channel-policy-snapshot-2026-08.md)
 - [ADRs](adr/README.md)
+
+## Discovery e apresentação
+- [Discovery operacional das lojas](discovery/operational-discovery.md)
+- [Visão executiva para negócio/família](product/executive-overview.md)
+- [Apresentação do projeto e portfólio](project/project-presentation-and-portfolio.md)
+- [Marca, naming e titularidade](project/branding-and-ownership.md)
 
 ## Como interpretar esta documentação
 
