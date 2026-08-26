@@ -6,6 +6,24 @@
 
 Cadastrar o produto uma vez e permitir que o mesmo dado canônico alimente loja física, site próprio e canais externos sem duplicar cadastro e sem transformar cada integração em regra do domínio.
 
+## Regra de isolamento comercial
+
+Todo catálogo, listing, pedido, recomendação e alternativa apresentado ao consumidor é restrito à `Organization` ativa.
+
+```text
+Customer/Conversation/Website
+→ Organization A
+→ CatalogSearch.organizationId = A
+→ Inventory.organizationId = A
+→ ChannelListing.organizationId = A
+```
+
+**Nunca** usar o fato de o Mora Core ser SaaS multi-tenant para pesquisar outras organizações e sugerir concorrentes.
+
+Isso inclui busca textual, visual, vetorial/embedding, IA, cache, analytics e conectores de marketplace.
+
+Dentro da mesma organização, a política pode permitir procurar em outras lojas, marcas, depósitos e canais próprios.
+
 ## PIM — Product Information Management
 
 O Mora Core mantém o produto canônico:
@@ -76,12 +94,38 @@ ChannelConnector
 Implementações possíveis:
 
 - `MoraStorefrontConnector`
+- `WhatsAppConnector`
 - `TikTokShopConnector`
 - `MercadoLivreConnector`
 - `ShopeeConnector`
 - futuros canais.
 
 Não espalhar `if marketplace == ...` pelo domínio.
+
+## Canais próprios da organização
+
+Mercado Livre, Shopee, TikTok Shop ou outro marketplace só podem ser tratados como extensão comercial da loja se existir uma `ChannelConnection` autorizada pertencente à mesma organização.
+
+Exemplo válido:
+
+```text
+Cliente no WhatsApp da Organization A
+→ item também está no Mercado Livre
+→ ChannelListing pertence à Organization A
+→ policy permite
+→ oferecer link da loja oficial da própria Organization A
+```
+
+Exemplo proibido:
+
+```text
+Cliente da Organization A
+→ busca pública no marketplace
+→ concorrente da Organization B/terceiro mais barato
+→ recomendar ao cliente
+```
+
+O Mora Core é software do lojista, não comparador de concorrentes para o consumidor.
 
 ## Publicação multicanal
 
@@ -113,17 +157,17 @@ As políticas precisam ser versionadas e revalidadas porque marketplaces mudam c
 
 ## OMS — Order Management System
 
-Pedidos externos e do site convergem em modelo canônico:
+Pedidos externos, site e commerce conversacional convergem em modelo canônico:
 
 ```text
-Channel Order
+Channel Order / WhatsApp Cart
 → ingest/dedupe
 → canonical Order
 → pagamento/status
 → reserva de estoque
 → fiscal quando aplicável
 → separação
-→ expedição
+→ expedição/retirada
 → tracking
 → cancelamento/devolução
 ```
@@ -162,13 +206,30 @@ Controles:
 ```text
 POS
 WEBSITE
+WHATSAPP
 MERCADO_LIVRE
 SHOPEE
 TIKTOK_SHOP
 OUTRO
 ```
 
-A venda registra canal. `storeId` pode ser nulo em venda puramente online. `sellerId` não deve ser preenchido automaticamente para marketplace.
+A venda registra canal. `storeId` pode ser nulo em venda puramente online. `sellerId` não deve ser preenchido automaticamente para marketplace ou venda 100% automatizada.
+
+## Alternativas e recuperação de venda
+
+Quando o item desejado está indisponível:
+
+```text
+mesma variante em outra location da Organization
+→ outra variante do mesmo produto
+→ produto semelhante da mesma Organization
+→ listing próprio da Organization em outro canal, se policy permitir
+→ back-in-stock
+→ CustomerRequest/SourcingRequest
+→ handoff humano
+```
+
+Ver [Demanda, Encomendas e Sourcing](customer-demand-and-sourcing.md) e [WhatsApp Commerce Agent](whatsapp-commerce-agent.md).
 
 ## Analytics
 
@@ -181,7 +242,9 @@ A origem do canal permite calcular:
 - devoluções;
 - desempenho de listing;
 - estoque comprometido;
-- rentabilidade por canal.
+- rentabilidade por canal;
+- recuperação de venda por alternativa;
+- demanda não atendida por canal.
 
 ## Webhooks
 
@@ -211,10 +274,22 @@ Jobs periódicos comparam Mora Core x canal para detectar drift em:
 
 Reconciliation não substitui alertas sobre falhas contínuas.
 
+## Testes multi-tenant específicos
+
+- ChannelConnection de A não pode ler listing de B;
+- recommendation de A não inclui produto de B;
+- vector search aplica tenant scope antes do ranking final;
+- cache inclui tenant/channel context;
+- webhook resolve conexão → tenant antes do processamento;
+- redirect para marketplace só usa conta/listing da mesma organização.
+
 ## Relacionados
 
+- [WhatsApp Commerce Agent](whatsapp-commerce-agent.md)
+- [Demanda, Encomendas e Sourcing](customer-demand-and-sourcing.md)
 - [Marketplaces](../integrations/marketplaces.md)
 - [Confiabilidade de integrações](../integrations/reliability-patterns.md)
 - [Pipeline de mídia](../ai/media-pipeline.md)
 - [Estoque](../domain/inventory.md)
 - [Storefront](../product/storefront.md)
+- [Multi-tenancy](../saas/multitenancy.md)
