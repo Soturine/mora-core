@@ -12,6 +12,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - [Discovery de WhatsApp, demanda e sourcing](discovery/conversational-commerce-discovery.md)
 - [Roadmap principal](roadmap/roadmap.md)
 - [Matriz de rastreabilidade](roadmap/requirements-traceability.md)
+- [Auditoria documental de 26/08/2026](audit/repository-documentation-audit-2026-08-26.md)
 
 ## Produto
 - [Visão](product/vision.md)
@@ -82,6 +83,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - [Benchmark — commerce conversacional](research/conversational-commerce-benchmark.md)
 - [Landscape de mercado](research/market-landscape.md)
 - [Snapshot de políticas dos canais](research/channel-policy-snapshot-2026-08.md)
+- [Auditoria documental](audit/repository-documentation-audit-2026-08-26.md)
 - [ADRs](adr/README.md)
 
 ## Discovery e apresentação
@@ -98,6 +100,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - `/docs` = verdade atual aprofundada.
 - `product/mora-reference-future-state.md` = exemplo de como todas as capacidades planejadas se conectam numa operação completa das lojas Mora.
 - `architecture/end-to-end-flows.md` = visão técnica dos mesmos fluxos atravessando módulos.
+- `audit/*` = auditorias datadas do estado documental/arquitetural.
 - ADR = decisão arquitetural e trade-offs.
 - Runbook = operação, incidente e recuperação.
 - Changelog/release notes = história.
