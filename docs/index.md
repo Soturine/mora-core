@@ -39,6 +39,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - [Taxonomia do catálogo](commerce/catalog-taxonomy.md)
 - [PIM, OMS e omnichannel](commerce/omnichannel.md)
 - [WhatsApp Commerce Agent — vendas conversacionais com IA](commerce/whatsapp-commerce-agent.md)
+- [Operação de conversas — inbox, handoff e roteamento](commerce/conversation-operations.md)
 - [Demanda, encomendas e sourcing](commerce/customer-demand-and-sourcing.md)
 - [Marketplaces](integrations/marketplaces.md)
 - [Bling](integrations/bling.md)
