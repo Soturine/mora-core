@@ -1,6 +1,16 @@
-# Mora Core
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/mora-core-logo.png">
+    <source media="(prefers-color-scheme: light)" srcset="assets/brand/mora-core-logo-dark.png">
+    <img src="assets/brand/mora-core-logo-dark.png" alt="Mora Core" width="720">
+  </picture>
+</p>
 
-> **Sistema operacional para o varejo físico e digital.**
+<p align="center"><strong>Sistema operacional para o varejo físico e digital.</strong></p>
+
+---
+
+# Mora Core
 
 O **Mora Core** é uma plataforma proprietária, preparada para evoluir como SaaS, projetada para centralizar catálogo, produtos, variantes/SKUs, estoque, compras, vendas, PDV, caixas, vendedores, comissões, sites, aplicativo mobile, IA aplicada ao catálogo, analytics, integrações e comércio omnichannel.
 
@@ -8,6 +18,12 @@ As primeiras operações reais de referência são as lojas Mora. A arquitetura,
 
 > [!IMPORTANT]
 > **Estado atual:** este repositório está em fase `documentation-first`. Os documentos registram visão, domínio, arquitetura, riscos, contratos e roadmap. Eles **não significam que todas as funcionalidades descritas já existem**. Cada milestone deverá declarar honestamente `implementado`, `parcial`, `experimental`, `planejado`, `adiado` ou `não validado`.
+
+## Para conhecer o projeto sem entrar na parte técnica
+
+Se você é proprietário de loja, familiar, parceiro ou quer entender primeiro a ideia do negócio, comece pela **[Visão Executiva do Mora Core](docs/product/executive-overview.md)**.
+
+Para transformar a operação real das lojas em requisitos corretos, consulte também o **[Discovery Operacional](docs/discovery/operational-discovery.md)**.
 
 ## Tese do produto
 
@@ -143,8 +159,11 @@ mora-core/
 ├── AGENTS.md
 ├── SECURITY.md
 ├── CONTRIBUTING.md
+├── assets/
+│   └── brand/
 ├── docs/
 │   ├── index.md
+│   ├── discovery/
 │   ├── product/
 │   ├── architecture/
 │   ├── domain/
@@ -161,6 +180,7 @@ mora-core/
 │   ├── ux/
 │   ├── roadmap/
 │   ├── research/
+│   ├── project/
 │   ├── engineering/
 │   └── adr/
 └── ... implementação será adicionada incrementalmente
@@ -171,6 +191,7 @@ mora-core/
 Comece pelo [índice da documentação](docs/index.md).
 
 ### Produto e escopo
+- [Visão executiva](docs/product/executive-overview.md)
 - [Visão do produto](docs/product/vision.md)
 - [Módulos e capacidades](docs/product/modules.md)
 - [Personas e jornadas críticas](docs/product/personas-and-journeys.md)
@@ -201,6 +222,7 @@ Comece pelo [índice da documentação](docs/index.md).
 ### Engenharia, QA, segurança e operação
 - [Engineering Constitution](docs/engineering/constitution.md)
 - [Arquitetura de segurança](docs/security/security-architecture.md)
+- [Privacidade e LGPD](docs/security/privacy-lgpd.md)
 - [Estratégia de QA e testes](docs/qa/test-strategy.md)
 - [DevOps, DevSecOps e release engineering](docs/devops/devsecops.md)
 - [SRE, observabilidade e AIOps](docs/operations/sre-aiops.md)
@@ -209,6 +231,7 @@ Comece pelo [índice da documentação](docs/index.md).
 - [Acessibilidade e UX](docs/ux/accessibility-and-design.md)
 
 ### Planejamento e pesquisa
+- [Discovery operacional](docs/discovery/operational-discovery.md)
 - [Benchmark competitivo](docs/research/competitive-benchmark.md)
 - [Riscos e questões em aberto](docs/roadmap/risks-and-open-questions.md)
 - [ADRs](docs/adr/README.md)
