@@ -7,6 +7,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 ## Comece aqui
 - [Visão Executiva](product/executive-overview.md)
 - [Discovery Operacional](discovery/operational-discovery.md)
+- [Discovery de WhatsApp, demanda e sourcing](discovery/conversational-commerce-discovery.md)
 - [Roadmap principal](roadmap/roadmap.md)
 - [Matriz de rastreabilidade](roadmap/requirements-traceability.md)
 
@@ -79,6 +80,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 
 ## Discovery e apresentação
 - [Discovery operacional das lojas](discovery/operational-discovery.md)
+- [Discovery de WhatsApp, demanda e sourcing](discovery/conversational-commerce-discovery.md)
 - [Visão executiva para negócio/família](product/executive-overview.md)
 - [Apresentação do projeto e portfólio](project/project-presentation-and-portfolio.md)
 - [Marca, naming e titularidade](project/branding-and-ownership.md)
