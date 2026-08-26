@@ -27,13 +27,33 @@ Mora Core Sale/Order
 
 Provedores candidatos devem ser comparados via ADR/POC; nomes mencionados na pesquisa incluem soluções como Nuvem Fiscal e TecnoSpeed/PlugNotas, sem decisão atual.
 
+## Governo/SEFAZ possui integração oficial?
+
+Sim, mas é importante usar a terminologia correta.
+
+### NF-e/NFC-e
+
+NF-e e NFC-e usam **WebServices oficiais das Secretarias de Fazenda**, com XML/XSD, certificado/assinatura, autorização, eventos e regras definidas pelo MOC e notas técnicas.
+
+Não existe uma única chamada REST simples e estável do tipo `POST /gerar-nota` que cubra toda a fiscalidade nacional de mercadorias.
+
+### NFS-e
+
+O padrão nacional de **NFS-e** possui APIs e manuais oficiais do governo para emissão/integração, mas NFS-e trata **serviços**. Ela não substitui NF-e/NFC-e no fluxo comum de venda de roupas/mercadorias.
+
+Ver documentação aprofundada em [Integração Fiscal no Brasil](../integrations/fiscal-brazil.md).
+
 ## São Paulo — contexto verificado em 2026
 
-A Portaria SRE 79/2024 acrescentou regra vedando emissão de CF-e-SAT a partir de **1º de janeiro de 2026**. Portanto, qualquer projeto para varejo paulista precisa validar o fluxo atual de NFC-e/NF-e e contingência com SEFAZ/contador antes de produção.
+A Portaria SRE 79/2024 acrescentou regra vedando emissão de CF-e-SAT a partir de **1º de janeiro de 2026**. A página oficial da NFC-e da SEFAZ-SP informa que a NFC-e passou a ser obrigatória a partir dessa data para o varejo paulista em substituição aos documentos indicados pela Secretaria.
 
-Fonte oficial:
+Portanto, qualquer projeto para varejo paulista precisa validar o fluxo atual de NFC-e/NF-e e contingência com SEFAZ/contador antes de produção.
+
+Fontes oficiais:
 
 - https://legislacao.fazenda.sp.gov.br/Paginas/Portaria-SRE-79-de-2024.aspx
+- https://portal.fazenda.sp.gov.br/servicos/nfce/
+- https://www.nfe.fazenda.gov.br/
 
 Outras regras por tipo de destinatário/operação podem mudar; não congelar interpretação fiscal apenas neste documento.
 
@@ -44,17 +64,20 @@ issueDocument()
 queryStatus()
 cancelDocument()
 downloadXml()
+getPrintableRepresentation()
 handleContingency()
 getAuthorizationProtocol()
 ```
 
-O domínio `sales` conhece resultado fiscal necessário, não detalhes específicos do SDK/provedor.
+O domínio `sales` conhece resultado fiscal necessário, não detalhes específicos do SDK/provedor ou SOAP/XML da SEFAZ.
 
 ## Documento fiscal
 
 Persistir referências suficientes para auditoria:
 
 - tipo;
+- environment;
+- legal entity;
 - chave;
 - número/série;
 - status;
@@ -83,7 +106,7 @@ Antes de aposentar solução fiscal existente, definir e testar:
 - certificado inválido/expirado;
 - fila de transmissão posterior.
 
-“Retry” sem consulta de status pode duplicar efeito.
+“Retry” sem consulta de status pode duplicar efeito ou piorar estado ambíguo.
 
 ---
 
@@ -96,11 +119,11 @@ A documentação atual do TikTok Shop para Brasil contém fluxo de upload de inv
 Fluxo conceitual:
 
 ```text
-Order TikTok
+Order TikTok/ML/Shopee/Site/WhatsApp
 → validar necessidade fiscal
 → emitir documento
 → autorização
-→ upload/registro no canal
+→ upload/registro no canal quando exigido
 → fulfillment
 ```
 
@@ -129,6 +152,8 @@ ou outras combinações permitidas.
 - crédito;
 - parcelamento;
 - voucher/vale quando negócio usar;
+- link de pagamento;
+- pagamento no WhatsApp quando elegível;
 - outros provedores.
 
 A lista final vem do Discovery.
@@ -184,27 +209,48 @@ Qualquer expansão de escopo de cartão exige revisão de segurança/compliance.
 ## Integração
 
 ```text
-POS
+POS / Site / WhatsApp
 → Payment Port
-→ TEF/Provider
+→ TEF/PSP/Provider
 → resultado
-→ Sale finalization/reconciliation
+→ Order/Sale finalization/reconciliation
 ```
 
 Timeout ambíguo exige consulta/reconciliation antes de cobrar novamente.
 
 ---
 
-# 5. Pix
+# 5. Pix e comprovantes
 
 Possíveis cenários:
 
 - Pix manual com confirmação humana;
 - QR dinâmico via provider;
 - webhook de confirmação;
-- conciliação posterior.
+- conciliação posterior;
+- experiência de pagamento no WhatsApp quando disponível/elegível.
 
-Webhooks são deduplicados e autenticados. Não considerar screenshot/comprovante isolado como confirmação automática sem policy.
+Webhooks são deduplicados e autenticados.
+
+### Regra dura
+
+**Screenshot, PDF ou imagem de comprovante isolado não confirma pagamento automaticamente.**
+
+Preferir:
+
+```text
+webhook assinado do PSP
+ou
+consulta idempotente ao provider
+```
+
+Se não houver integração, usar:
+
+```text
+AWAITING_MANUAL_REVIEW
+```
+
+com aprovação humana auditada.
 
 ---
 
@@ -271,7 +317,25 @@ Certificado A1, CSC, tokens e credenciais:
 
 ---
 
-# 10. Observabilidade
+# 10. DANFE, XML e DARF
+
+### XML
+
+É o documento eletrônico autorizado conforme o modelo e deve ter retenção/integridade adequadas.
+
+### DANFE/DANFE-NFC-e
+
+Representação auxiliar conforme especificações aplicáveis. Pode ser disponibilizada ao cliente por link/arquivo/canal quando apropriado.
+
+### DARF
+
+DARF é documento de arrecadação de tributos federais e **não é o documento normalmente gerado para entregar ao consumidor em cada venda de roupa**.
+
+Evitar misturar obrigação tributária da empresa com documento fiscal da venda ao cliente.
+
+---
+
+# 11. Observabilidade
 
 Métricas/alertas futuros:
 
@@ -282,13 +346,14 @@ Métricas/alertas futuros:
 - pagamento pendente/ambíguo;
 - refund failure;
 - reconciliation mismatch;
-- provider outage.
+- provider outage;
+- tempo `payment confirmed → fiscal authorized`.
 
 Logs não contêm cartão/secret/XML inteiro indiscriminadamente.
 
 ---
 
-# 11. Testes essenciais
+# 12. Testes essenciais
 
 ## Fiscal
 
@@ -300,7 +365,8 @@ Logs não contêm cartão/secret/XML inteiro indiscriminadamente.
 - contingência;
 - certificado inválido;
 - provider indisponível;
-- marketplace invoice workflow.
+- marketplace invoice workflow;
+- legal entity/tenant isolation.
 
 ## Pagamento
 
@@ -311,18 +377,19 @@ Logs não contêm cartão/secret/XML inteiro indiscriminadamente.
 - caixa correto;
 - transação concorrente;
 - webhook duplicado/out-of-order;
+- comprovante falso/manual;
 - tenant isolation.
 
 Testar adapters com sandbox/fixtures oficiais e poucos E2E contra ambiente real de homologação quando disponível.
 
 ---
 
-# 12. Go-live gate fiscal
+# 13. Go-live gate fiscal
 
 Antes de qualquer venda depender do Mora Core como autoridade fiscal:
 
 - contador valida operação;
-- CNPJ/topologia conhecidos;
+- CNPJ/topologia/LegalEntity conhecidos;
 - certificado/CSC configurados;
 - homologação passou;
 - contingência documentada/testada;
@@ -339,17 +406,21 @@ Antes de qualquer venda depender do Mora Core como autoridade fiscal:
 
 - quais CNPJs e regimes?
 - NFC-e/NF-e por cenário?
+- existe prestação de serviço que exija NFS-e?
 - provider fiscal?
 - certificado A1?
 - adquirentes/TEF?
 - Pix integrado?
+- payment provider para site/WhatsApp?
 - settlement/conciliação?
 - marketplace fiscal flow inicial?
 - contador receberá export/API?
 
 ## Relacionados
 
+- [Integração Fiscal no Brasil](../integrations/fiscal-brazil.md)
 - [Discovery](../discovery/operational-discovery.md)
 - [Vendas/caixa](sales-cash-commissions.md)
+- [WhatsApp Commerce Agent](../commerce/whatsapp-commerce-agent.md)
 - [Marketplaces](../integrations/marketplaces.md)
 - [Segurança](../security/security-architecture.md)
