@@ -1,12 +1,10 @@
 # Benchmark — Commerce Conversacional, WhatsApp e Agentes de Venda
 
-> **Status:** pesquisa estratégica atualizada em 26/08/2026. Produtos, políticas e preços da Meta e demais fornecedores mudam; revalidar antes de implementação ou claim comercial.
+> **Status:** pesquisa estratégica atualizada em 26/08/2026. Produtos, políticas, preços e resultados de fornecedores mudam; revalidar antes de implementação ou claim comercial. Métricas de cases são fornecidas/publicadas pelos próprios fornecedores e clientes citados, portanto servem como benchmark, não como promessa de resultado para o Mora Core.
 
 ## Objetivo
 
-Entender como empresas e plataformas usam WhatsApp, catálogos, Flows, IA, pagamentos e handoff humano para orientar o Mora Core sem transformar o produto numa cópia de fornecedor específico.
-
----
+Entender como empresas e plataformas usam WhatsApp, catálogos, Flows, IA, pagamentos, substituição de ruptura, checkout e handoff humano para orientar o Mora Core sem transformar o produto numa cópia de fornecedor específico.
 
 ## 1. WhatsApp Business como canal comercial
 
@@ -22,25 +20,13 @@ conversa
 → suporte/pós-venda
 ```
 
-A Meta posiciona o WhatsApp como ambiente no qual pessoas podem conversar com empresas, navegar por produtos, fechar compras e receber suporte.
+A hipótese Mora Core “WhatsApp como primeiro checkout online” é coerente com a evolução real do canal.
 
-### Aprendizado
+## 2. Catálogo — caso Cupcakes by Isa
 
-A hipótese Mora Core “WhatsApp como primeiro checkout online” é coerente com a evolução real da plataforma.
+A Meta lançou catálogos no WhatsApp Business para reduzir o envio manual repetitivo de fotos/detalhes. **Cupcakes by Isa**, de Ribeirão Preto, participou do acesso inicial citado pela Meta.
 
----
-
-## 2. Catálogo
-
-A Meta lançou catálogos no WhatsApp Business para reduzir o envio manual repetitivo de fotos/detalhes. Cada item pode ter fotos, preço, descrição, link e código de produto.
-
-### Caso brasileiro citado pela Meta
-
-**Cupcakes by Isa**, de Ribeirão Preto, participou do acesso inicial a catálogo. A Meta descreveu a funcionalidade como forma de manter clientes dentro da conversa e evitar envio individual de cada produto.
-
-### Aprendizado Mora Core
-
-Catálogo no WhatsApp não deve virar segunda fonte de verdade.
+Aprendizado:
 
 ```text
 Mora Core Product Truth
@@ -48,96 +34,46 @@ Mora Core Product Truth
 → catálogo WhatsApp
 ```
 
----
+O catálogo do canal não vira segunda fonte de verdade.
 
-## 3. WhatsApp Flows
+## 3. WhatsApp Flows — Banco PAN e Consórcio Magalu
 
-Flows permite experiências ricas/estruturadas dentro da conversa, como formulários, seleção e processos transacionais.
+Flows permite experiências ricas/estruturadas dentro da conversa. A Meta citou no Brasil o Banco PAN e o Consórcio Magalu em usos de jornada estruturada.
 
-A Meta apresenta casos como:
-
-- escolher assento;
-- marcar compromisso;
-- pedir/comprar produtos e serviços;
-- feedback/product browsing.
-
-### Casos brasileiros divulgados pela Meta
-
-#### Banco PAN
-
-Participou do piloto global de Flows para simplificar oferta/contratação de produtos de crédito e relatou foco em agilidade/conversão.
-
-#### Consórcio Magalu
-
-Usou Flow para agendamento de conversa com especialista e gestão de interações no próprio WhatsApp.
-
-### Aprendizado Mora Core
-
-Misturar dois modos:
+Para Mora Core, combinar:
 
 ```text
 conversa natural
 + componentes estruturados
 ```
 
-Exemplos Mora:
-
-- escolher tamanho/cor;
-- endereço;
-- entrega/retirada;
-- confirmar carrinho;
-- solicitar troca;
-- registrar interesse/encomenda.
-
-O LLM não deve ser responsável por validar campos críticos que um Flow/schema pode validar melhor.
-
----
+Exemplos: selecionar tamanho/cor, endereço, retirada/entrega, confirmar carrinho, troca e registro de interesse/encomenda.
 
 ## 4. Pagamentos no Brasil
 
-A Meta disponibilizou pagamentos para pequenas empresas no Brasil e posteriormente anunciou extensão para médias/grandes empresas via WhatsApp Business Platform, além de uma experiência mais estruturada com Pix.
+A Meta disponibilizou pagamentos para pequenas empresas no Brasil e anunciou evolução da experiência para a Business Platform, inclusive Pix em cenários suportados.
 
-### Aprendizado
+Mora Core mantém `PaymentPort` abstrato e não assume elegibilidade, provedor ou regra futura.
 
-Mora Core deve manter `PaymentPort` abstrato.
-
-Não assumir que:
-
-- todo tenant é elegível;
-- todo meio está disponível;
-- condições comerciais serão as mesmas quando implementarmos.
-
-E comprovante em imagem não é autoridade de pagamento.
-
----
+Comprovante em imagem não é autoridade de pagamento.
 
 ## 5. Meta Business Agent (2026)
 
-A Meta anunciou o **Meta Business Agent** e a **Meta Business Agent Platform**.
-
-Capacidades publicamente descritas incluem:
+A Meta anunciou o **Meta Business Agent** e a **Meta Business Agent Platform** com capacidades publicamente descritas como:
 
 - responder perguntas específicas da empresa;
-- recomendações a partir do catálogo;
-- qualificação de leads;
-- agendamento;
-- fechamento de vendas;
-- definição de quando equipe humana assume;
-- integração com sistemas externos.
+- recomendar produtos do catálogo;
+- qualificar leads;
+- agendar;
+- fechar vendas;
+- definir handoff humano;
+- integrar sistemas externos.
 
-A Meta afirmou em junho de 2026 que mais de um milhão de empresas já usam um Meta Business Agent no WhatsApp/Messenger.
-
-A plataforma também foi anunciada com conexão a sistemas como Shopify, Zendesk e Shopee.
-
-### Implicação
-
-“Agente comercial conectado a sistemas internos” está virando uma categoria de produto real.
+A Meta afirmou em junho de 2026 que mais de um milhão de empresas já usam um Meta Business Agent no WhatsApp/Messenger e anunciou conexões com plataformas como Shopify, Zendesk e Shopee.
 
 ### Decisão Mora Core
 
 Não depender exclusivamente do runtime da Meta.
-
-Arquitetura:
 
 ```text
 Channel Adapter
@@ -146,64 +82,158 @@ Channel Adapter
 → Mora Core domains
 ```
 
-Isso permite:
+Assim é possível avaliar runtime próprio, Meta Business Agent ou solução híbrida sem entregar Product Truth e invariantes ao fornecedor de IA.
 
-- usar agente próprio;
-- avaliar Business Agent da Meta;
-- compartilhar lógica entre site/WhatsApp/Instagram;
-- manter invariantes no Core.
+## 6. VTEX WhatsApp Store
 
----
+A oferta atual da VTEX posiciona uma jornada de commerce conversacional que conecta catálogo, disponibilidade, assistência por IA, carrinho, checkout, frete e pagamento no WhatsApp.
 
-## 6. Handoff humano
+O benchmark é particularmente relevante porque mostra que “catálogo → conversa → checkout” já é uma categoria comercial madura no varejo.
 
-A própria direção do Meta Business Agent inclui controle de quando uma pessoa entra para fornecer suporte.
+Aprendizados para Mora Core:
 
-### Aprendizado
+- catálogo e estoque em tempo real são pré-requisitos;
+- conversa deve estar conectada ao OMS/checkout, não a uma FAQ separada;
+- preço/promoção precisam vir do commerce engine;
+- UX conversacional não elimina necessidade de transações determinísticas.
 
-Handoff não é “falha do bot”. É capacidade principal.
+Fonte: https://www.vtex.com/pt-br/solutions/business-needs/whatsapp-store/
 
-Mora Core precisa entregar à funcionária:
+## 7. Cencosud Brasil + Weni/VTEX — substituição por ruptura
 
-- resumo;
-- intenção;
-- produtos mostrados;
-- disponibilidade;
-- carrinho;
-- pagamento/status;
-- problema pendente.
+Case publicado pela Weni/VTEX: a Cencosud Brasil automatizou via WhatsApp a aprovação de substituições quando um item do pedido não estava disponível.
 
----
-
-## 7. Conversational commerce em pequenos negócios
-
-O valor não é apenas automação. Pequenos comércios já usam WhatsApp como extensão natural da venda física.
-
-A Meta publicou pesquisa na América Latina indicando que ferramentas como WhatsApp Business são amplamente consideradas importantes para MPMEs, com interesse elevado no uso de IA generativa.
-
-### Hipótese Mora Core
-
-O pequeno lojista não precisa aprender uma interface de e-commerce complexa para cada conversa. O agente pode transformar linguagem natural em operações estruturadas.
-
----
-
-## 8. Omnichannel físico + digital
-
-A Meta também vem ampliando produtos de anúncios omnichannel, inclusive mostrando loja próxima e estoque em contexto publicitário.
-
-Isso reforça a direção:
+Fluxo descrito:
 
 ```text
-inventory truth
-→ canais digitais
-→ loja física
+ruptura no picking
+→ separador indica alternativas disponíveis
+→ cliente recebe opções no WhatsApp
+→ cliente escolhe
+→ decisão volta ao sistema logístico
 ```
 
-Estoque por loja/local é ativo comercial, não apenas backoffice.
+O case reporta aumento de faturamento e alta satisfação após a implantação.
 
----
+### Por que isso importa muito para o Mora Core
 
-## 9. Onde o Mora Core pode diferenciar
+É evidência de mercado para exatamente um dos fluxos que queremos:
+
+```text
+produto indisponível
+→ alternativas reais
+→ cliente escolhe
+→ operação continua
+```
+
+Diferença Mora Core: nossa busca precisa ser estritamente limitada à mesma `Organization` e também pode acontecer **antes da compra**, não só durante picking.
+
+Fonte: https://weni.ai/pt/casos-de-sucesso/case-cencosud
+
+## 8. Osklen + Weni/VTEX — moda e recuperação de carrinho
+
+A Osklen, marca brasileira de moda, publicou case com Weni/VTEX envolvendo agentes no WhatsApp para conectar jornadas como recuperação de carrinho e atendimento/pós-venda.
+
+Esse caso é especialmente relevante porque Mora Core nasce no varejo de moda.
+
+Aprendizados:
+
+- WhatsApp pode ser canal de receita, não apenas SAC;
+- abandono de carrinho é um evento de commerce que pode alimentar conversa contextual;
+- moda se beneficia de proximidade, recomendação e conteúdo visual;
+- métricas de conversão precisam ser rastreadas por canal/campanha.
+
+Fonte: https://weni.ai/pt/casos-de-sucesso/osklen-aumenta-conversao-de-carrinhos-abandonados-em-quase-15-e-gera-r-453-mil-de-receita-incremental-em-30-dias
+
+## 9. Carajás Home Center — recuperação e pós-venda
+
+Case publicado pela VTEX/Weni descreve WhatsApp integrado ao e-commerce para:
+
+- recuperação de carrinhos;
+- atualização e consulta de pedidos;
+- segunda via de boletos/Pix;
+- acesso a notas fiscais;
+- atendimento humano opcional.
+
+Isso reforça a tese de um mesmo canal atender pré-venda, conversão e pós-venda.
+
+Fonte: https://vtex.com/pt-br/commerce-executive-stories/carajas-alcanca-15-vezes-mais-conversao-no-whatsapp-com-weni-by-vtex
+
+## 10. Grupo CVLB — IA integrada a sistemas existentes
+
+Case de Casa & Vídeo/Le Biscuit divulgado por VTEX/Weni descreve agentes no WhatsApp integrados a VTEX, SAP e parceiros logísticos para resolver tarefas como:
+
+- segunda via;
+- notas fiscais;
+- cancelamento/reembolso;
+- tracking/status;
+- troca e instalação.
+
+O ponto mais importante não é a porcentagem reportada de automação, mas a arquitetura: **o agente executa tarefas porque está conectado aos sistemas de verdade**.
+
+Isso valida a direção Mora:
+
+```text
+IA
+→ tool layer
+→ domínios/APIs reais
+```
+
+não:
+
+```text
+IA
+→ improvisa resposta
+```
+
+Fonte: https://www.vtex.com/pt-br/commerce-executive-stories/grupo-cvlb-automatiza-75-do-atendimento-e-reduz-custos-em-mais-de-20-com-experiencia-conversacional/
+
+## 11. Midea — concierge de catálogo
+
+A VTEX descreve o uso de IA como concierge digital no WhatsApp, consultando catálogo/SKUs em tempo real, respondendo dúvidas e conduzindo ao checkout.
+
+Para Mora Core, isso reforça o “personal shopper” especialmente em categorias onde o cliente não sabe o SKU exato.
+
+Fonte: https://www.vtex.com/pt-br/casos-de-clientes/midea-scales-high-consideration-sales-with-agentic-cx
+
+## 12. Blip — benchmark de plataforma de atendimento/vendas
+
+A Blip oferece WhatsApp para varejo com automação + atendimento humano, histórico de conversa, recuperação de carrinho, status de pedido e publicação em múltiplos canais.
+
+### Aprendizados
+
+- vários atendentes em um número é requisito operacional real;
+- histórico/handoff importa tanto quanto IA;
+- a experiência deve suportar atendimento humano sem perder contexto;
+- omnichannel conversacional pode incluir Instagram/Messenger.
+
+Fonte: https://digital.blip.ai/varejo/whatsapp/
+
+## 13. O que esses casos NÃO provam
+
+Eles não provam que:
+
+- o Mora Core terá os mesmos resultados;
+- toda venda deve ser automatizada;
+- toda empresa quer checkout dentro do WhatsApp;
+- usar IA substitui discovery/processo;
+- um fornecedor específico é a escolha correta.
+
+Servem para validar padrões e hipóteses.
+
+## 14. Handoff humano
+
+Handoff não é “falha do bot”. É uma capability principal.
+
+Mora Core precisa entregar à funcionária um resumo seguro de intenção, produtos mostrados, disponibilidade, carrinho, pagamento/status e pendência.
+
+## 15. Conversational commerce em pequenos negócios
+
+A Meta publicou pesquisa na América Latina indicando forte importância de WhatsApp Business para MPMEs e interesse elevado em IA generativa.
+
+A hipótese Mora Core é permitir que pequeno lojista use linguagem natural sem perder estrutura transacional, segurança e auditabilidade.
+
+## 16. Onde o Mora Core pode diferenciar
 
 WhatsApp, catálogo, IA e pagamento isoladamente não são diferenciais exclusivos.
 
@@ -226,64 +256,31 @@ cliente pede por texto/foto
 → cliente avisado
 ```
 
-Especialmente forte é fechar o ciclo **demanda não atendida → compras**.
+O ciclo **demanda não atendida → compras/sourcing** é uma hipótese particularmente diferenciadora para o pequeno/médio varejo.
 
----
-
-## 10. Funcionalidades recomendadas
+## 17. Funcionalidades recomendadas
 
 ### Conversa e descoberta
 
-- NLU/intenção;
-- texto;
-- imagem;
-- áudio/transcrição;
-- busca visual;
-- filtros naturais;
-- recomendação tenant-scoped;
-- comparação.
+Texto, imagem, áudio/transcrição, busca visual, filtros naturais, recomendação tenant-scoped e comparação.
 
 ### Conversão
 
-- carrinho;
-- reserva;
-- cross-sell;
-- coupon/promo policy;
-- entrega/retirada;
-- pagamento;
-- handoff.
+Carrinho, reserva, cross-sell, policy de promoção, entrega/retirada, pagamento e handoff.
 
 ### Recuperação de venda
 
-- alternativa mesma variante;
-- outra loja da mesma organização;
-- produto similar;
-- back-in-stock;
-- wishlist;
-- sourcing request;
-- carrinho abandonado consentido.
+Outra unidade da mesma organização, outra variante, produto semelhante, back-in-stock, wishlist, sourcing request e carrinho abandonado consentido.
 
 ### Pós-venda
 
-- status;
-- tracking;
-- fiscal document;
-- troca;
-- devolução;
-- suporte.
+Status, tracking, documento fiscal, troca, devolução e suporte.
 
 ### Inteligência comercial
 
-- demanda perdida;
-- perguntas sem resposta;
-- produtos mais solicitados sem estoque;
-- conversão das alternativas;
-- sourcing conversion;
-- motivo de abandono.
+Demanda perdida, perguntas sem resposta, produtos solicitados sem estoque, conversão de alternativas, sourcing conversion e motivo de abandono.
 
----
-
-## 11. Regras que evitam um agente ruim
+## 18. Regras que evitam um agente ruim
 
 - não inventar produto;
 - não cruzar tenant;
@@ -293,56 +290,50 @@ Especialmente forte é fechar o ciclo **demanda não atendida → compras**.
 - não prometer reposição sem sourcing/PO;
 - não negociar desconto fora da policy;
 - não esconder handoff;
-- não guardar PII/conversas para sempre;
+- não guardar PII/conversas indefinidamente;
 - não usar LLM como authorization engine.
 
----
+## 19. Build vs Buy
 
-## 12. Build vs Buy
+### Opções a comparar
 
-### Meta Business Agent
+- Meta Business Agent;
+- VTEX/Weni, quando o ecossistema/cliente justificar;
+- Blip ou outros provedores de experiência conversacional;
+- orchestration própria do Mora Core;
+- abordagem híbrida.
 
-Avaliar:
+### Critérios
 
-- disponibilidade para nosso cenário;
-- idioma/qualidade;
-- integração/actions;
-- pricing;
-- tenancy;
-- observability;
-- data/privacy;
-- portability;
+- integração com nossos domínios;
+- multi-tenancy;
+- isolamento de dados;
+- lock-in;
+- custos;
+- observabilidade;
 - handoff;
-- lock-in.
+- provider portability;
+- Webhooks/API/actions;
+- qualidade PT-BR;
+- App Review/onboarding;
+- suporte;
+- SLA;
+- compliance e privacidade.
 
-### Plataforma própria de agent orchestration
+### Recomendação arquitetural
 
-Avaliar:
+Construir **domínio, tool layer, policies e contracts próprios** independentemente do runtime de IA escolhido.
 
-- custo de engenharia;
-- provider abstraction;
-- evals;
-- tooling;
-- memory;
-- guardrails;
-- omnichannel reuse.
+## 20. Fontes Meta
 
-### Recomendação
-
-Construir **o domínio, tool layer e contracts próprios** independentemente do runtime de IA escolhido. Assim não há lock-in arquitetural.
-
----
-
-## 13. Fontes de referência
-
-- Meta — Catálogos no WhatsApp Business: https://about.fb.com/br/news/2019/11/apresentamos-o-catalogo-para-pequenas-empresas/
-- Meta — Compras/pagamentos/atendimento: https://about.fb.com/br/news/2020/10/compras-pagamentos-e-atendimento-ao-cliente-tudo-no-whatsapp/
-- Meta — Pagamentos em pequenas empresas no Brasil: https://about.fb.com/br/news/2023/04/agora-voce-pode-pagar-uma-pequena-empresa-no-brasil-pelo-whatsapp/
-- Meta — WhatsApp Flows: https://about.fb.com/br/news/2023/09/whatsapp-lanca-flows-recurso-que-permite-as-empresas-criarem-experiencias-nativas-no-aplicativo/
-- Meta — IA e pagamentos/PIX para empresas: https://about.fb.com/br/news/2024/06/novas-ferramentas-de-ia-meta-verified-e-muito-mais-para-empresas-no-whatsapp/
-- Meta — MPMEs América Latina: https://about.fb.com/br/news/2025/08/26598-pesquisa-revela-o-impacto-da-meta-nas-mpmes-da-america-latina/
-- Meta — Meta Business Agent 2026: https://about.fb.com/br/news/2026/06/conversations-2026-apresentamos-o-meta-business-agent/
-- WhatsApp Business Platform workspace: https://www.postman.com/meta/whatsapp-business-platform/overview/
+- Catálogos: https://about.fb.com/br/news/2019/11/apresentamos-o-catalogo-para-pequenas-empresas/
+- Compras/pagamentos/atendimento: https://about.fb.com/br/news/2020/10/compras-pagamentos-e-atendimento-ao-cliente-tudo-no-whatsapp/
+- Pagamentos no Brasil: https://about.fb.com/br/news/2023/04/agora-voce-pode-pagar-uma-pequena-empresa-no-brasil-pelo-whatsapp/
+- WhatsApp Flows: https://about.fb.com/br/news/2023/09/whatsapp-lanca-flows-recurso-que-permite-as-empresas-criarem-experiencias-nativas-no-aplicativo/
+- IA/Pix para empresas: https://about.fb.com/br/news/2024/06/novas-ferramentas-de-ia-meta-verified-e-muito-mais-para-empresas-no-whatsapp/
+- MPMEs América Latina: https://about.fb.com/br/news/2025/08/26598-pesquisa-revela-o-impacto-da-meta-nas-mpmes-da-america-latina/
+- Meta Business Agent: https://about.fb.com/br/news/2026/06/conversations-2026-apresentamos-o-meta-business-agent/
+- WhatsApp Business Platform: https://www.postman.com/meta/whatsapp-business-platform/overview/
 - Embedded Signup: https://www.postman.com/meta/whatsapp-business-platform/documentation/du6gzjv/embedded-signup
 
 ## Relacionados
@@ -350,4 +341,5 @@ Construir **o domínio, tool layer e contracts próprios** independentemente do 
 - [WhatsApp Commerce Agent](../commerce/whatsapp-commerce-agent.md)
 - [Demanda e Sourcing](../commerce/customer-demand-and-sourcing.md)
 - [Omnichannel](../commerce/omnichannel.md)
+- [Roadmap conversacional](../roadmap/conversational-commerce-roadmap.md)
 - [Benchmark ERP/PDV](competitive-benchmark.md)
