@@ -13,7 +13,8 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - [Discovery de WhatsApp, demanda e sourcing](discovery/conversational-commerce-discovery.md)
 - [Roadmap principal](roadmap/roadmap.md)
 - [Matriz de rastreabilidade](roadmap/requirements-traceability.md)
-- [Auditoria documental de 26/08/2026](audit/repository-documentation-audit-2026-08-26.md)
+- [Auditoria operacional/documental — 05/09/2026](audit/repository-documentation-audit-2026-09-05.md)
+- [Auditoria documental anterior — 26/08/2026](audit/repository-documentation-audit-2026-08-26.md)
 
 ## Produto
 - [Visão](product/vision.md)
@@ -87,7 +88,8 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - [Benchmark — commerce conversacional](research/conversational-commerce-benchmark.md)
 - [Landscape de mercado](research/market-landscape.md)
 - [Snapshot de políticas dos canais](research/channel-policy-snapshot-2026-08.md)
-- [Auditoria documental](audit/repository-documentation-audit-2026-08-26.md)
+- [Auditoria operacional/documental — 05/09/2026](audit/repository-documentation-audit-2026-09-05.md)
+- [Auditoria documental — 26/08/2026](audit/repository-documentation-audit-2026-08-26.md)
 - [ADRs](adr/README.md)
 
 ## Discovery e apresentação
