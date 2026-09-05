@@ -9,6 +9,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - [Cenário completo das lojas Mora no estado futuro](product/mora-reference-future-state.md)
 - [Fluxos técnicos end-to-end](architecture/end-to-end-flows.md)
 - [Discovery Operacional](discovery/operational-discovery.md)
+- [Baseline real de PDV e hardware das lojas Mora — 05/09/2026](discovery/mora-pos-hardware-baseline-2026-09-05.md)
 - [Discovery de WhatsApp, demanda e sourcing](discovery/conversational-commerce-discovery.md)
 - [Roadmap principal](roadmap/roadmap.md)
 - [Matriz de rastreabilidade](roadmap/requirements-traceability.md)
@@ -29,6 +30,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - [Fluxos técnicos end-to-end](architecture/end-to-end-flows.md)
 - [Monólito modular](architecture/modular-monolith.md)
 - [Contratos de API](architecture/api-contracts.md)
+- [Integração do POS com periféricos locais](architecture/pos-device-integration.md)
 - [Multi-tenancy](saas/multitenancy.md)
 - [Plataforma e onboarding](saas/platform-and-onboarding.md)
 - [Billing e entitlements](saas/billing-entitlements.md)
@@ -88,6 +90,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 
 ## Discovery e apresentação
 - [Discovery operacional das lojas](discovery/operational-discovery.md)
+- [Baseline real de PDV e hardware](discovery/mora-pos-hardware-baseline-2026-09-05.md)
 - [Discovery de WhatsApp, demanda e sourcing](discovery/conversational-commerce-discovery.md)
 - [Visão executiva para negócio/família](product/executive-overview.md)
 - [Cenário completo das lojas Mora](product/mora-reference-future-state.md)
@@ -98,6 +101,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 
 - `README.md` = visão e mapa do projeto.
 - `/docs` = verdade atual aprofundada.
+- `discovery/mora-pos-hardware-baseline-2026-09-05.md` = evidência de campo sobre PDVs, PCs e periféricos atuais; não é contrato futuro do Mora POS.
 - `product/mora-reference-future-state.md` = exemplo de como todas as capacidades planejadas se conectam numa operação completa das lojas Mora.
 - `architecture/end-to-end-flows.md` = visão técnica dos mesmos fluxos atravessando módulos.
 - `audit/*` = auditorias datadas do estado documental/arquitetural.
