@@ -77,7 +77,35 @@ Loja == location? Há depósito? Transferência imediata?
 
 ## Q-006 — Hardware
 
-Impressoras, leitores, PCs, Smart POS, TEF, celulares e rede ainda precisam inventário.
+**Status: parcialmente resolvido em 05/09/2026.** Existe agora um [baseline real de PDV e hardware](../discovery/mora-pos-hardware-baseline-2026-09-05.md) cobrindo os dois caixas de referência, PCs, leitores e impressoras observados.
+
+Ainda falta confirmar:
+
+- portas, drivers e modo de operação dos leitores;
+- impressora/gaveta e pinagem/configuração real;
+- impressora de etiquetas, se separada;
+- modelo/adquirente dos terminais de pagamento;
+- TEF/Pix realmente integrado;
+- rede, link reserva e nobreak;
+- equipamentos reserva;
+- política de ciclo de vida/upgrade das estações.
+
+## Q-024 — Ownership NOOVA/Lips/Bling
+
+A loja feminina/familiar foi observada usando NOOVA e a masculina usando Lips Control. Ainda precisa ser definido, por capability, quem é a autoridade atual de catálogo, estoque, venda, caixa, pagamento e fiscal e como Bling participa do fluxo.
+
+**Bloqueia:** plano de integração/migração, shadow POS e cutover.
+
+## Q-025 — Arquitetura do cliente POS e periféricos
+
+Decidir por ADR/POC entre:
+
+- PWA/web + Local Device Bridge;
+- wrapper desktop leve;
+- cliente desktop dedicado;
+- arquitetura híbrida.
+
+A escolha precisa ser provada no hardware real das duas lojas, não por preferência tecnológica.
 
 ---
 
@@ -95,7 +123,16 @@ Bling atual, Nuvem Fiscal, TecnoSpeed ou outro? Decisão por ADR/POC.
 
 ## Q-008 — TEF/adquirentes/Pix
 
-Fluxo/hardware atual desconhecido.
+O levantamento visual confirmou que existem terminais físicos e que o NOOVA possui entradas de administração/gerenciamento relacionadas a TEF e formas de pagamento, mas **o fluxo real e a autoridade ainda não estão confirmados**.
+
+Validar:
+
+- adquirente/modelo;
+- TEF vs POS desacoplado;
+- Pix integrado/manual;
+- parcelamento/crediário;
+- conciliação;
+- timeout/cancelamento.
 
 ## R-004 — Duplicar cobrança/documento em retry
 
@@ -131,7 +168,15 @@ Venda e reserva concorrentes podem consumir última unidade.
 
 ## Q-010 — Negative stock
 
-Policy real ainda precisa ser decidida.
+A tela de produtos do legado feminino mostrou exemplos de saldo negativo e resíduos/fracionamentos em itens `UN`. Isso confirma que a policy do Core **não pode ser deduzida do legado**.
+
+Precisamos decidir:
+
+- estoque negativo será proibido, permitido por exceção ou apenas importado como anomalia histórica?
+- como reconciliar saldos de abertura?
+- como tratar resíduos fracionários em unidade inteira?
+
+Ver [Migração dos legados Mora](../data/mora-legacy-data-migration.md).
 
 ## R-008 — Drift balance/ledger
 
@@ -140,6 +185,12 @@ Policy real ainda precisa ser decidida.
 ## R-009 — Offline duplica movimento
 
 **Mitigação:** operationId/outbox/idempotency.
+
+## R-035 — Importar anomalias do legado como verdade do Core
+
+**Risco:** milhares de registros históricos podem conter saldo negativo/fracionário, ausência de categoria, custo desconhecido/zero, duplicidades ou grade inconsistente.
+
+**Mitigação:** snapshot bruto, staging, anomaly report, mapping, dry-run, reconciliação e aprovação antes de `OPENING_IMPORT`.
 
 ---
 
@@ -215,7 +266,7 @@ Qual primeiro: TikTok Shop, Mercado Livre ou Shopee? Depende do plano real das l
 
 ## R-020 — Duas fontes de verdade
 
-Core e Bling escrevendo estoque simultaneamente sem ownership.
+Core e Bling/legados escrevendo estoque simultaneamente sem ownership.
 
 **Mitigação:** fases explícitas de transição; one source per capability.
 
@@ -225,9 +276,17 @@ SKUs/categorias duplicadas/variações ruins entram no Core.
 
 **Mitigação:** audit, staging, mapping, dry-run, reconciliation.
 
+O levantamento de 05/09/2026 tornou esse risco concreto: o legado observado contém milhares de produtos e indícios de dívida de classificação/saldo.
+
 ## Q-014 — Quais módulos Bling são realmente usados
 
-Discovery obrigatório.
+Discovery obrigatório, agora junto com o mapeamento de NOOVA/Lips.
+
+## R-036 — Migração big-bang dos dois PDVs
+
+**Risco:** substituir simultaneamente NOOVA, Lips, hardware, fiscal e pagamentos sem período comparativo.
+
+**Mitigação:** extract/read-only → Core projection → shadow → piloto controlado → cutover por capability com fallback.
 
 ---
 
@@ -260,6 +319,18 @@ WhatsApp pode ser suficiente inicialmente; validar demanda antes de payments/log
 ## R-026 — Upload malicioso
 
 **Mitigação:** MIME/content, budgets, isolated storage, scan when justified.
+
+## R-037 — Estações legadas e software local aumentam superfície de ataque
+
+O levantamento mostrou Windows 10 em uma estação, Windows 11 em hardware antigo na outra e softwares locais/remote-support. Isso exige inventory e hardening antes de transformar o caixa em endpoint confiável do Mora Core.
+
+**Mitigação:** verificar lifecycle real do SO, patches, contas administrativas, remote support, software desnecessário, drivers, firewall, atualização assinada do cliente/bridge e plano de renovação de hardware.
+
+## R-038 — Local Device Bridge inseguro
+
+Um bridge localhost mal desenhado pode permitir site malicioso imprimir, abrir gaveta ou executar comandos.
+
+**Mitigação:** bind local, autenticação/origin allowlist, contrato estreito, command allowlist, schema validation, rate limit, least privilege, update assinado e nenhum shell/SQL/raw command.
 
 ---
 
@@ -323,6 +394,12 @@ Precisam de objetivo real, não números decorativos.
 
 **Mitigação:** restore exercises.
 
+## R-039 — Periférico local vira single point of failure do caixa
+
+**Risco:** scanner, impressora, gaveta, driver ou bridge indisponível pode bloquear atendimento se não houver fallback.
+
+**Mitigação:** entrada manual, reprint, health check, modo degradado, dispositivo reserva quando custo justificar, runbook e teste de desconectar/reconectar.
+
 ---
 
 # 15. SaaS comercial
@@ -352,11 +429,12 @@ São hipóteses, não fatos permanentes:
 1. PostgreSQL é boa base transacional inicial.
 2. Monólito modular é melhor que microserviços no estágio inicial.
 3. React Native + Expo provavelmente atende mobile.
-4. Bling deve ser integrado antes de substituído.
+4. Bling deve ser integrado antes de substituído onde ele realmente for autoridade/capability relevante.
 5. Sites atuais podem migrar incrementalmente para Catalog API.
 6. Moda é domínio inicial forte, mas plataforma pode atender outros varejos.
 7. IA será assistiva/human-reviewed.
 8. SaaS usará DB compartilhado multi-tenant inicialmente com isolamento rigoroso.
+9. O futuro POS deve abstrair periféricos por capability e ser validado no hardware real antes de definir seu runtime.
 
 Cada uma pode virar ADR e ser revisada com evidência.
 
@@ -372,6 +450,9 @@ Quando questão é resolvida:
 ## Relacionados
 
 - [Discovery](../discovery/operational-discovery.md)
+- [Baseline real de PDV/hardware](../discovery/mora-pos-hardware-baseline-2026-09-05.md)
+- [POS e periféricos](../architecture/pos-device-integration.md)
+- [Migração dos legados Mora](../data/mora-legacy-data-migration.md)
 - [ADRs](../adr/README.md)
 - [Roadmap](roadmap.md)
 - [Cobertura](documentation-coverage.md)
