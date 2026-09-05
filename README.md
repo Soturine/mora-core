@@ -38,6 +38,37 @@ As primeiras operações de referência são as lojas Mora. A arquitetura, poré
 
 ---
 
+# Comece por aqui
+
+### Quero entender o projeto sem entrar em código
+
+➡️ **[Visão Executiva do Mora Core](docs/product/executive-overview.md)**
+
+Explica em linguagem de negócio o problema, a proposta, estoque, funcionárias, comissão, caixa, sites, mobile, IA, WhatsApp, marketplaces, fiscal e SaaS.
+
+### Quero ver como tudo funcionaria nas lojas Mora quando estiver completo
+
+➡️ **[Cenário de Referência — Lojas Mora no Estado Futuro](docs/product/mora-reference-future-state.md)**
+
+### Quero entender como os módulos conversam tecnicamente
+
+➡️ **[Fluxos Técnicos End-to-End](docs/architecture/end-to-end-flows.md)**
+
+### Quero entender como as lojas realmente operam hoje
+
+➡️ **[Discovery Operacional](docs/discovery/operational-discovery.md)**  
+➡️ **[Baseline real de PDV e hardware — 05/09/2026](docs/discovery/mora-pos-hardware-baseline-2026-09-05.md)**
+
+### Quero entender WhatsApp, demanda não atendida e sourcing
+
+➡️ **[Discovery de WhatsApp, Demanda e Sourcing](docs/discovery/conversational-commerce-discovery.md)**
+
+### Quero navegar pela documentação completa
+
+➡️ **[Índice canônico da documentação](docs/index.md)**
+
+---
+
 # Estado real observado nas lojas Mora
 
 Em **05/09/2026**, o Discovery deixou de ser apenas conceitual e passou a incorporar evidências de campo das duas operações físicas.
@@ -148,8 +179,6 @@ A proposta de longo prazo não é ser apenas “um ERP com PDV”, mas um **sist
 # Sites / Storefront
 
 O Mora Core deve ser a fonte de verdade para qualquer storefront público.
-
-A arquitetura suporta:
 
 ```text
 Mora Core
@@ -551,26 +580,101 @@ A documentação aprofundada é a fonte de verdade do projeto enquanto o reposit
 
 ➡️ **[Índice completo da documentação](docs/index.md)**
 
-## Comece por aqui
+## Documentos-chave
+
+### Produto e negócio
 
 - [Visão Executiva](docs/product/executive-overview.md)
-- [Cenário de Referência das Lojas Mora](docs/product/mora-reference-future-state.md)
-- [Discovery Operacional](docs/discovery/operational-discovery.md)
-- [Baseline real de PDV e hardware](docs/discovery/mora-pos-hardware-baseline-2026-09-05.md)
+- [Cenário completo das lojas Mora](docs/product/mora-reference-future-state.md)
+- [Visão do produto](docs/product/vision.md)
+- [Escopo e não objetivos](docs/product/scope-and-non-goals.md)
+- [Módulos e capacidades](docs/product/modules.md)
+- [Personas e jornadas](docs/product/personas-and-journeys.md)
+- [Storefront](docs/product/storefront.md)
+- [Analytics e relatórios](docs/product/analytics-and-reporting.md)
+
+### Discovery
+
+- [Discovery operacional](docs/discovery/operational-discovery.md)
+- [Baseline real de PDV e hardware — 05/09/2026](docs/discovery/mora-pos-hardware-baseline-2026-09-05.md)
+- [Discovery de WhatsApp, demanda e sourcing](docs/discovery/conversational-commerce-discovery.md)
+
+### Arquitetura e domínio
+
 - [Arquitetura do sistema](docs/architecture/system-architecture.md)
 - [Fluxos end-to-end](docs/architecture/end-to-end-flows.md)
+- [Monólito modular](docs/architecture/modular-monolith.md)
+- [Contratos de API](docs/architecture/api-contracts.md)
 - [Integração do POS com periféricos](docs/architecture/pos-device-integration.md)
 - [Modelo de domínio](docs/domain/domain-model.md)
+- [Identidade, funcionários e permissões](docs/domain/identity-employees-permissions.md)
+- [Multi-tenancy](docs/saas/multitenancy.md)
+- [Estoque](docs/domain/inventory.md)
+- [Compras e fornecedores](docs/domain/purchasing-and-suppliers.md)
 - [Vendas, caixa e comissões](docs/domain/sales-cash-commissions.md)
 - [Fiscal e pagamentos](docs/domain/fiscal-and-payments.md)
-- [Migração dos legados Mora](docs/data/mora-legacy-data-migration.md)
-- [Plano de testes do POS em hardware real](docs/qa/pos-hardware-test-plan.md)
-- [Roadmap](docs/roadmap/roadmap.md)
-- [Riscos e questões em aberto](docs/roadmap/risks-and-open-questions.md)
-- [Cobertura documental](docs/roadmap/documentation-coverage.md)
-- [Auditoria operacional/documental — 05/09/2026](docs/audit/repository-documentation-audit-2026-09-05.md)
 
-## Áreas cobertas
+### Mobile, IA e commerce
+
+- [Mobile](docs/mobile/mobile-app.md)
+- [Barcode/scanner](docs/mobile/barcodes-and-scanning.md)
+- [Governança de IA](docs/ai/ai-governance.md)
+- [Pipeline de mídia](docs/ai/media-pipeline.md)
+- [Taxonomia do catálogo](docs/commerce/catalog-taxonomy.md)
+- [Omnichannel/PIM/OMS](docs/commerce/omnichannel.md)
+- [WhatsApp Commerce Agent](docs/commerce/whatsapp-commerce-agent.md)
+- [Inbox/handoff/copiloto](docs/commerce/conversation-operations.md)
+- [Demanda e sourcing](docs/commerce/customer-demand-and-sourcing.md)
+- [Marketplaces](docs/integrations/marketplaces.md)
+- [Bling](docs/integrations/bling.md)
+- [Fiscal Brasil](docs/integrations/fiscal-brazil.md)
+- [Confiabilidade de integrações](docs/integrations/reliability-patterns.md)
+
+### Dados, migração e onboarding
+
+- [Data lifecycle](docs/data/data-lifecycle.md)
+- [Import/export/migração](docs/data/import-export-migration.md)
+- [Migração dos legados Mora](docs/data/mora-legacy-data-migration.md)
+- [Plataforma e onboarding](docs/saas/platform-and-onboarding.md)
+- [Billing e entitlements](docs/saas/billing-entitlements.md)
+
+### Engenharia profissional
+
+- [Engineering Constitution](docs/engineering/constitution.md)
+- [Segurança](docs/security/security-architecture.md)
+- [Identidade, RBAC e auditoria](docs/security/identity-rbac-audit.md)
+- [Privacidade/LGPD](docs/security/privacy-lgpd.md)
+- [QA/Testes](docs/qa/test-strategy.md)
+- [Plano de testes do POS em hardware real](docs/qa/pos-hardware-test-plan.md)
+- [DevSecOps](docs/devops/devsecops.md)
+- [SRE/AIOps](docs/operations/sre-aiops.md)
+- [Performance/Capacidade](docs/operations/performance-capacity.md)
+- [Incidentes/Recovery](docs/operations/incident-recovery.md)
+- [Runbooks](docs/operations/runbook-catalog.md)
+- [Acessibilidade e UX](docs/ux/accessibility-and-design.md)
+
+### Planejamento, rastreabilidade e pesquisa
+
+- [Roadmap](docs/roadmap/roadmap.md)
+- [Roadmap de commerce conversacional](docs/roadmap/conversational-commerce-roadmap.md)
+- [Riscos e questões em aberto](docs/roadmap/risks-and-open-questions.md)
+- [Rastreabilidade](docs/roadmap/requirements-traceability.md)
+- [Rastreabilidade do Discovery de campo — 05/09/2026](docs/roadmap/field-discovery-traceability-2026-09-05.md)
+- [Cobertura documental](docs/roadmap/documentation-coverage.md)
+- [Benchmark ERP/PDV](docs/research/competitive-benchmark.md)
+- [Benchmark conversacional](docs/research/conversational-commerce-benchmark.md)
+- [Landscape de mercado](docs/research/market-landscape.md)
+- [Snapshot de políticas dos canais](docs/research/channel-policy-snapshot-2026-08.md)
+- [Auditoria operacional/documental — 05/09/2026](docs/audit/repository-documentation-audit-2026-09-05.md)
+- [Auditoria documental — 26/08/2026](docs/audit/repository-documentation-audit-2026-08-26.md)
+- [ADRs](docs/adr/README.md)
+
+### Projeto
+
+- [Apresentação do projeto e portfólio](docs/project/project-presentation-and-portfolio.md)
+- [Marca, naming e titularidade](docs/project/branding-and-ownership.md)
+
+## Estrutura documental
 
 ```text
 docs/
@@ -617,7 +721,7 @@ docs/
 2. **Foundation**: identidade, organizations, lojas, catálogo, variantes, estoque, audit e CI.
 3. **Mobile operacional**: scanner, produto, mídia, recebimento, inventário e sourcing.
 4. **Storefront(s)** conectados ao catálogo/estoque real; decidir experiência pública unificada ou separada sem acoplar o Core.
-5. **Commerce conversacional** incremental.
+5. **Commerce conversacional** incremental: catálogo → busca visual → carrinho/reserva → pagamento → fiscal → sourcing.
 6. **Sales/POS/Cash/Commissions** com hardware real, shadow, piloto e fallback.
 7. **Analytics operacional** baseado em transações reais.
 8. **IA assistida** com evals/provenance/human review.
@@ -625,7 +729,7 @@ docs/
 10. **SaaS self-service** com onboarding, billing, export, suporte e hardening multi-tenant.
 11. **Escala/especialização** apenas quando dados justificarem.
 
-Leia **[Roadmap principal](docs/roadmap/roadmap.md)**.
+Veja [Roadmap principal](docs/roadmap/roadmap.md) e [Roadmap de Commerce Conversacional](docs/roadmap/conversational-commerce-roadmap.md).
 
 ---
 
