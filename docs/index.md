@@ -66,6 +66,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - [Identidade, RBAC e auditoria — visão de segurança](security/identity-rbac-audit.md)
 - [Privacidade e LGPD](security/privacy-lgpd.md)
 - [QA e testes](qa/test-strategy.md)
+- [Plano de testes do POS em hardware real](qa/pos-hardware-test-plan.md)
 - [DevOps / DevSecOps](devops/devsecops.md)
 - [SRE e AIOps](operations/sre-aiops.md)
 - [Performance e capacidade](operations/performance-capacity.md)
@@ -73,6 +74,7 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - [Catálogo de runbooks](operations/runbook-catalog.md)
 - [Data lifecycle](data/data-lifecycle.md)
 - [Import/export/migração](data/import-export-migration.md)
+- [Migração dos legados Mora](data/mora-legacy-data-migration.md)
 - [Acessibilidade e UX](ux/accessibility-and-design.md)
 
 ## Planejamento, rastreabilidade e pesquisa
@@ -102,6 +104,9 @@ Este índice é a entrada canônica para a documentação técnica e de produto.
 - `README.md` = visão e mapa do projeto.
 - `/docs` = verdade atual aprofundada.
 - `discovery/mora-pos-hardware-baseline-2026-09-05.md` = evidência de campo sobre PDVs, PCs e periféricos atuais; não é contrato futuro do Mora POS.
+- `architecture/pos-device-integration.md` = arquitetura planejada para integrar periféricos sem acoplar domínio a fabricantes.
+- `data/mora-legacy-data-migration.md` = estratégia específica para migrar/reconciliar NOOVA, Lips, Bling e outras fontes atuais.
+- `qa/pos-hardware-test-plan.md` = evidência exigida antes de afirmar compatibilidade do POS com o hardware real.
 - `product/mora-reference-future-state.md` = exemplo de como todas as capacidades planejadas se conectam numa operação completa das lojas Mora.
 - `architecture/end-to-end-flows.md` = visão técnica dos mesmos fluxos atravessando módulos.
 - `audit/*` = auditorias datadas do estado documental/arquitetural.
