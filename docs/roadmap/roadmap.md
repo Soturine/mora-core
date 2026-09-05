@@ -28,7 +28,7 @@ Entender a operação real antes de congelar arquitetura/comportamento.
 - processo desejado `to-be`;
 - topologia Organization/LegalEntity/Brand/Store/StockLocation;
 - catálogo real/variantes;
-- fluxo Bling;
+- ownership atual por capability entre NOOVA/Lips/Bling e outros sistemas;
 - recebimento/compras;
 - venda/caixa;
 - comissão;
@@ -41,11 +41,26 @@ Entender a operação real antes de congelar arquitetura/comportamento.
 - ADRs iniciais;
 - critérios Fase 1.
 
+## Evidência já coletada em 05/09/2026
+
+O baseline de campo confirmou:
+
+- NOOVA na loja feminina/familiar;
+- Lips Control na loja masculina;
+- duas estações Windows com perfis de hardware diferentes;
+- dois scanners e duas impressoras térmicas diferentes;
+- fluxos reais de venda/caixa/retaguarda observados no NOOVA;
+- sinais concretos de dívida de dados no catálogo legado.
+
+Ver [Baseline real de PDV e hardware](../discovery/mora-pos-hardware-baseline-2026-09-05.md).
+
+Isso **não fecha** o Discovery: ainda faltam drivers/portas, rede, TEF/Pix, fiscal ownership, APIs/exports, CNPJs, política de comissão, trocas, estoque e dados de migração.
+
 ## Gate
 
 Questões críticas abertas estão respondidas ou explicitamente adiadas com risco aceito.
 
-Ver [Discovery Operacional](../discovery/operational-discovery.md).
+Ver [Discovery Operacional](../discovery/operational-discovery.md), [baseline de campo](../discovery/mora-pos-hardware-baseline-2026-09-05.md) e [riscos/questões abertas](risks-and-open-questions.md).
 
 ---
 
@@ -158,7 +173,7 @@ Remover dados estáticos/manuais dos sites e transformar Mora Core na fonte do c
 
 ## Objetivo
 
-Operar vendas físicas com integridade e auditabilidade.
+Operar vendas físicas com integridade, auditabilidade e compatibilidade comprovada com a operação real.
 
 ## Capacidades
 
@@ -172,11 +187,44 @@ Operar vendas físicas com integridade e auditabilidade.
 - sangria/suprimento;
 - fechamento/blind close;
 - CommissionPlan/Entry/Statement;
-- relatórios operacionais.
+- relatórios operacionais;
+- cliente POS;
+- scanner/barcode input;
+- receipt/reprint;
+- integração de gaveta quando aplicável;
+- health/diagnóstico de periféricos;
+- Local Device Bridge ou alternativa somente após ADR/POC;
+- modo degradado/fallback explicitamente definido.
+
+## Hardware
+
+O primeiro piloto deve passar pela matriz física documentada em [Plano de testes do POS](../qa/pos-hardware-test-plan.md):
+
+- loja feminina/familiar: Core i3-3240/6 GB, YHD-8200, Bematech MP-4200 TH;
+- loja masculina: Celeron N3350/6 GB, Knup KP-1026, VERDE DYJ-5801.
+
+Esses equipamentos são baseline de migração/shadow, não requisito mínimo permanente do produto.
 
 ## Fiscal
 
 Continuar inicialmente via estratégia de menor risco/provedor existente até adapter e contingência validados.
+
+Impressora térmica não é autoridade fiscal.
+
+## Migração/shadow
+
+Antes do cutover:
+
+```text
+legado em produção
+→ Mora POS/Core em shadow
+→ comparar itens/totais/estoque/caixa/pagamento/fiscal
+→ corrigir gaps
+→ piloto controlado
+→ cutover com fallback
+```
+
+Ver [Migração dos legados Mora](../data/mora-legacy-data-migration.md).
 
 ## Gate
 
@@ -185,6 +233,12 @@ Continuar inicialmente via estratégia de menor risco/provedor existente até ad
 - caixa reconciliável;
 - comissão com reversão;
 - política real validada;
+- ownership NOOVA/Lips/Bling/fiscal/payment definido;
+- scanners e impressoras das duas lojas testados;
+- reprint sem duplicar venda;
+- disconnect/reconnect e sem papel tratados;
+- performance medida nas duas estações;
+- cliente/bridge update e rollback testados se aplicável;
 - piloto/shadow contra operação atual;
 - recovery/fallback.
 
@@ -305,7 +359,8 @@ Permitir entrada de novos lojistas com segurança e pouco trabalho manual do tim
 - support tooling;
 - export/offboarding;
 - privacy/legal flows;
-- per-tenant observability/cost.
+- per-tenant observability/cost;
+- device/workstation onboarding quando o cliente usar POS local.
 
 ## Gate
 
@@ -316,7 +371,8 @@ Permitir entrada de novos lojistas com segurança e pouco trabalho manual do tim
 - RPO/RTO definidos;
 - privacy/legal review;
 - support/incident process;
-- external pilot.
+- external pilot;
+- hardware support matrix e política de versões quando POS fizer parte do plano SaaS.
 
 ---
 
@@ -364,14 +420,16 @@ Toda fase/milestone importante revisa:
 - deploy/rollback;
 - runbook;
 - backup/recovery;
-- support.
+- support;
+- compatibilidade de hardware/driver quando a mudança toca POS.
 
 ## Documentação
 
 - README/docs atuais;
 - ADRs;
 - riscos;
-- rastreabilidade.
+- rastreabilidade;
+- baseline de campo atualizado quando hardware/processo mudar.
 
 ## Git/Release
 
@@ -413,6 +471,8 @@ WIP baixo. Item não entra em `Ready` sem requisitos mínimos.
 - push/CI;
 - validação correspondente.
 
+Para POS/hardware, DoD inclui evidência em dispositivo/estação alvo quando a claim depender disso.
+
 ---
 
 # Métricas de evolução
@@ -429,11 +489,17 @@ Acompanhar:
 - data quality;
 - inventory accuracy;
 - onboarding time;
-- support burden.
+- support burden;
+- scan-to-item/finalização/print latency no POS quando aplicável;
+- taxa de falha/recovery de periféricos.
 
 ## Relacionados
 
 - [Visão](../product/vision.md)
 - [Escopo](../product/scope-and-non-goals.md)
+- [Baseline real das lojas](../discovery/mora-pos-hardware-baseline-2026-09-05.md)
+- [POS/periféricos](../architecture/pos-device-integration.md)
+- [Migração dos legados](../data/mora-legacy-data-migration.md)
+- [Plano de testes do POS](../qa/pos-hardware-test-plan.md)
 - [Riscos](risks-and-open-questions.md)
 - [Cobertura documental](documentation-coverage.md)
