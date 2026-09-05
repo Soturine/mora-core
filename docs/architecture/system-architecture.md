@@ -9,6 +9,7 @@ Definir uma arquitetura que:
 - suporte operação real de varejo;
 - preserve invariantes de dinheiro/estoque/permissões;
 - permita mobile, web, POS e storefront;
+- integre hardware local sem contaminar o domínio com fabricantes;
 - seja SaaS-ready;
 - facilite integração com ERP/marketplaces;
 - possa crescer sem microserviços prematuros;
@@ -47,6 +48,18 @@ O padrão inicial é **monólito modular** com uma aplicação/API e workers, co
       Media/AI                │             Fiscal/Payments/AI
 ```
 
+Para a operação física, o POS pode ter também uma boundary local separada:
+
+```text
+Mora POS
+   │
+   ├── HTTPS → Mora Core API
+   │
+   └── localhost/IPC → Local Device Bridge? → scanner/impressora/gaveta
+```
+
+O `Local Device Bridge` é uma opção arquitetural, ainda sujeita a ADR/POC. Não é um segundo backend de negócio.
+
 ## Núcleo de autoridade
 
 ### Backend/domain é autoridade para
@@ -59,16 +72,19 @@ O padrão inicial é **monólito modular** com uma aplicação/API e workers, co
 - comissão;
 - preço publicado autorizado;
 - lifecycle de produto/listing;
+- payment/fiscal state quando aplicável;
 - idempotência;
 - audit.
 
 Clientes podem coletar input e apresentar estado, mas não tornam uma operação válida apenas porque a UI permitiu.
 
+Scanner, impressora, browser ou bridge local nunca são autoridade de estoque, pagamento, fiscal ou permissão.
+
 ## Camadas
 
 ### Domain
 
-Entidades, value objects, state machines, invariantes e policies independentes de HTTP/framework/provedor.
+Entidades, value objects, state machines, invariantes e policies independentes de HTTP/framework/provedor/dispositivo.
 
 Exemplos:
 
@@ -100,9 +116,11 @@ Implementa ports:
 - Bling;
 - marketplaces;
 - fiscal;
+- payment/TEF adapters;
 - AI;
 - email/push;
-- observability.
+- observability;
+- adapters de dispositivo quando existirem no runtime local apropriado.
 
 ### Interface/Delivery
 
@@ -123,9 +141,73 @@ worker    → jobs, webhooks, media, reconciliation
 web       → admin/storefront quando necessário
 mobile    → app separado consumindo API
 pos       → cliente POS
+bridge?   → integração local estreita com periféricos
 ```
 
-Isso não significa serviços independentes. API e worker podem fazer parte do mesmo deploy/artifact inicialmente.
+Isso não significa serviços independentes de negócio. API e worker podem fazer parte do mesmo deploy/artifact inicialmente. O bridge, se existir, é um agente local de device I/O, não um microserviço de domínio.
+
+## POS e periféricos locais
+
+O levantamento de campo de 05/09/2026 mostrou que as duas lojas Mora usam hardware e PDVs diferentes. Isso transforma compatibilidade de periféricos em requisito arquitetural real.
+
+### Capabilities
+
+O Core/POS trabalha com capabilities:
+
+```text
+barcode_input
+receipt_print
+label_print
+cash_drawer
+payment_terminal
+```
+
+Não com condicionais de fabricante espalhadas pelo sistema.
+
+### Scanner
+
+Quando confirmado no dispositivo, keyboard-wedge/HID é o caminho inicial preferido por simplicidade. Integração direta com USB/serial só entra quando houver requisito real.
+
+### Impressora
+
+Impressão é efeito posterior/referenciado da operação:
+
+```text
+Sale COMPLETED
+→ Receipt/PrintableRepresentation
+→ PrintJob
+→ PrinterAdapter
+```
+
+Reimprimir nunca equivale a finalizar a venda novamente.
+
+### Fiscal
+
+A impressora física não autoriza documento fiscal. O fluxo fiscal permanece:
+
+```text
+Sale/Order
+→ FiscalPort
+→ provider/SEFAZ
+→ FiscalDocument
+→ representação imprimível quando aplicável
+```
+
+### Local Device Bridge
+
+Se necessário, deve:
+
+- bindar apenas localmente/IPC por padrão;
+- expor command allowlist estreita;
+- validar schema;
+- autenticar/origin-allowlist conforme desenho;
+- operar com least privilege;
+- suportar version/health/update seguro;
+- nunca expor shell/SQL/filesystem irrestrito/secrets.
+
+WebUSB/Web Serial podem ser avaliados como progressive enhancement, não como única base de operação crítica sem matriz comprovada.
+
+Ver [Integração POS/periféricos](pos-device-integration.md).
 
 ## Persistência
 
@@ -199,7 +281,8 @@ Exemplos:
 - thumbnails;
 - analytics materializado;
 - atualização de search index;
-- envio de notificações.
+- envio de notificações;
+- impressão/reimpressão quando venda já está concluída e o efeito pode ser repetido de forma segura.
 
 Não transformar consistência eventual em desculpa para invariantes locais incorretas.
 
@@ -240,6 +323,8 @@ webhook
 → reconcile
 ```
 
+Sistemas legados NOOVA/Lips, se possuírem API/export suportado, também devem ficar atrás de adapters de migração/integrations e nunca vazar seu modelo para o domínio canônico.
+
 ## API pública vs API administrativa
 
 Storefront não precisa do mesmo payload do admin.
@@ -269,6 +354,8 @@ Config externa e validada por ambiente. Secrets ficam em secret manager/environm
 
 Configuração comercial é persistida por tenant, não misturada com environment config.
 
+Configuração de dispositivo/estação deve ser identificável e auditável sem transformar `vendor/model` em autorização.
+
 ## Ambientes
 
 ```text
@@ -278,6 +365,8 @@ production
 ```
 
 Dados e credentials separados. Staging não deve usar credencial produtiva por conveniência.
+
+Hardware de teste/homologação deve evitar efeitos produtivos, principalmente pagamento, fiscal e abertura de gaveta.
 
 ## Observabilidade
 
@@ -289,6 +378,15 @@ Desde o início:
 - métricas básicas;
 - error reporting;
 - audit separado.
+
+Para POS/local devices, incluir quando aplicável:
+
+- workstation/bridge version;
+- device health;
+- print failures/unknown;
+- scanner failures;
+- reconnects;
+- latência local.
 
 Tracing entra quando fluxos distribuídos justificarem.
 
@@ -305,7 +403,11 @@ Threat model considera:
 - fraude de caixa/comissão;
 - prompt injection;
 - supply chain;
-- backups.
+- backups;
+- workstation comprometida;
+- localhost bridge abusado por origem maliciosa;
+- update de cliente/bridge comprometido;
+- abertura indevida de gaveta/impressão abusiva.
 
 Ver [Arquitetura de segurança](../security/security-architecture.md).
 
@@ -313,7 +415,17 @@ Ver [Arquitetura de segurança](../security/security-architecture.md).
 
 Offline é capability de cliente, não um banco alternativo autoritativo irrestrito.
 
-Mobile pode usar SQLite/outbox para casos permitidos. PDV offline exige design próprio de fiscal, conflitos e reconciliação antes de ser prometido.
+Mobile pode usar SQLite/outbox para casos permitidos. PDV offline exige design próprio de venda, pagamento, fiscal, conflitos e reconciliação antes de ser prometido.
+
+O fato de o legado oferecer alguma forma de contingência não significa que o Mora Core pode copiar o comportamento sem compreender estados e obrigações.
+
+## Hardware de referência
+
+O baseline inicial real está em [Discovery — PDV e hardware](../discovery/mora-pos-hardware-baseline-2026-09-05.md).
+
+Os computadores atuais são alvos importantes de POC/shadow porque representam a operação existente. Eles **não** definem automaticamente o requisito mínimo permanente do SaaS.
+
+A decisão de runtime POS deve medir CPU, RAM, startup, scan-to-item, impressão, reconnect e update nessas máquinas.
 
 ## Evolução de escala
 
@@ -336,6 +448,9 @@ Mesmo em monólito, limitar impacto:
 - jobs separados;
 - bulkheads/concurrency limits onde necessário;
 - media/AI assíncronos;
+- falha da impressora não desfaz venda concluída;
+- falha do scanner tem fallback manual;
+- bridge ausente tem erro operacional claro;
 - circuit breaker apenas quando comportamento medido justificar;
 - fallback seguro, nunca dados falsos.
 
@@ -357,6 +472,8 @@ infrastructure/
 docs/
 ```
 
+Se houver bridge local, sua localização no monorepo/deploy deve ser decidida por ADR; não é obrigatório colocá-lo dentro do mesmo artifact do POS.
+
 Não é decisão de monorepo já tomada; exige ADR.
 
 ## ADRs necessários antes da implementação estrutural
@@ -369,6 +486,10 @@ Não é decisão de monorepo já tomada; exige ADR.
 - queue/jobs;
 - deployment/cloud;
 - mobile stack após spike;
+- **runtime do cliente POS**;
+- **estratégia de Device Bridge/periféricos**;
+- **offline/contingência do POS**;
+- **payment/TEF adapter**;
 - fiscal provider;
 - observability backend.
 
@@ -377,18 +498,23 @@ Não é decisão de monorepo já tomada; exige ADR.
 - regras críticas testáveis sem UI;
 - módulos sem ciclos indevidos;
 - integrations substituíveis;
+- hardware substituível por capability/adapter;
 - tenant scope explícito;
 - operações idempotentes quando retryable;
 - migrations reproduzíveis;
 - restore possível;
 - deploy observável/rollback;
 - sem secrets no cliente;
-- sem dependência prematura de distributed systems.
+- sem dependência prematura de distributed systems;
+- POS validado em hardware real antes de claim de compatibilidade.
 
 ## Relacionados
 
 - [Monólito modular](modular-monolith.md)
+- [POS/periféricos](pos-device-integration.md)
+- [Baseline de campo](../discovery/mora-pos-hardware-baseline-2026-09-05.md)
 - [API](api-contracts.md)
 - [Modelo de domínio](../domain/domain-model.md)
+- [Migração dos legados Mora](../data/mora-legacy-data-migration.md)
 - [DevSecOps](../devops/devsecops.md)
 - [SRE](../operations/sre-aiops.md)
