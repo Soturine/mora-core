@@ -4,6 +4,8 @@
 
 Em 2026-08-26 foram feitos passes sucessivos de auditoria de cobertura usando os textos consolidados da conversa e os requisitos adicionais surgidos durante a evolução do Mora Core.
 
+Em 05/09/2026 a documentação recebeu um novo passe baseado em **evidência de campo das duas lojas Mora**, cobrindo os PDVs atuais, computadores, leitores, impressoras, fluxos de caixa observados e sinais de qualidade do catálogo legado.
+
 A cobertura inclui agora, de forma rastreável:
 
 1. funcionários, login, vendas, comissão e fechamento de caixa;
@@ -17,7 +19,11 @@ A cobertura inclui agora, de forma rastreável:
 9. integração entre site, WhatsApp e canais próprios de marketplace;
 10. pagamento conversacional, comprovação e fiscalidade brasileira;
 11. WebServices oficiais de NF-e/NFC-e e APIs nacionais de NFS-e para serviços;
-12. pesquisa/benchmark de commerce conversacional e Meta Business Agent.
+12. pesquisa/benchmark de commerce conversacional e Meta Business Agent;
+13. baseline de hardware/PDV real das duas lojas;
+14. arquitetura de integração do POS com periféricos locais;
+15. estratégia de migração dos legados NOOVA/Lips/Bling com staging e reconciliação;
+16. riscos operacionais de endpoints antigos, drivers, periféricos e dados legados.
 
 A primeira versão do repositório possuía boa cobertura temática, porém profundidade insuficiente em vários documentos. Os documentos centrais foram aprofundados e a [matriz de rastreabilidade](requirements-traceability.md) é a prova de cobertura tema → fonte canônica.
 
@@ -102,6 +108,61 @@ A primeira versão do repositório possuía boa cobertura temática, porém prof
 - homologação, contingência e reconciliation;
 - Bling/provedor como estratégia inicial de menor risco.
 
+### PDV e hardware real
+
+O levantamento de 05/09/2026 documentou, com sanitização de PII:
+
+- loja feminina/familiar usando NOOVA Tecnologia;
+- loja masculina usando Lips Control;
+- versão de PDV observada `4.01.00.134` em ambas;
+- PCs, SO, processador e RAM das estações observadas;
+- leitores YHD-8200 e Knup KP-1026;
+- impressoras Bematech MP-4200 TH e VERDE DYJ-5801;
+- diferenças de hardware entre as lojas;
+- fluxos NOOVA observados de venda, formas de pagamento, sangria, suprimento, cancelamento, cliente, produtos, NFC-e, TEF e retaguarda;
+- riscos de ciclo de vida de SO e endpoint security;
+- necessidade de POC do futuro Mora POS nas duas estações.
+
+Fonte canônica: [Baseline real de PDV e hardware](../discovery/mora-pos-hardware-baseline-2026-09-05.md).
+
+### Arquitetura de periféricos
+
+Está documentado que:
+
+- domínio trabalha com capabilities, não marcas;
+- scanner HID/keyboard wedge é caminho preferido quando confirmado;
+- entrada manual é fallback obrigatório;
+- impressão é side effect separado da finalização de venda;
+- reimpressão não refaz venda;
+- impressora térmica não é autoridade fiscal;
+- `Local Device Bridge` é opção arquitetural estreita e segura, não backend paralelo;
+- WebUSB/Web Serial não são dependência exclusiva para funções críticas sem matriz comprovada;
+- PWA+bridge, wrapper e desktop dedicado exigem ADR/POC;
+- atualização, rollback, least privilege e health de dispositivo fazem parte do desenho.
+
+Fonte canônica: [Integração POS/periféricos](../architecture/pos-device-integration.md).
+
+### Migração e qualidade de dados legados
+
+A documentação agora cobre explicitamente:
+
+- NOOVA, Lips e Bling como possíveis fontes com ownership ainda a mapear;
+- extração suportada antes de scraping/engenharia reversa;
+- snapshot bruto imutável;
+- staging;
+- provenance;
+- anomaly classification;
+- saldo negativo/fracionário sem correção silenciosa;
+- `Sem Categoria` como dívida a mapear, não taxonomia final;
+- zero vs unknown em custo/preço;
+- reconstrução de produto/variante;
+- dry-run;
+- reconciliação;
+- shadow/dual-run;
+- cutover com fallback.
+
+Fonte canônica: [Migração dos legados Mora](../data/mora-legacy-data-migration.md).
+
 ### Engenharia e operação
 
 - onboarding, billing, entitlements e feature flags;
@@ -109,7 +170,7 @@ A primeira versão do repositório possuía boa cobertura temática, porém prof
 - object storage e secrets;
 - QA, DevSecOps, SRE/AIOps, performance, recovery e runbooks;
 - arquitetura por capabilities, sem exceções `if organization == Mora`;
-- `AGENTS.md` agora contém os invariantes de recommendation boundary, pagamento e sourcing.
+- `AGENTS.md` contém invariantes de recommendation boundary, pagamento, sourcing e, após o passe de campo, orientação para POS/periféricos.
 
 ## Documentos adicionados no passe de commerce conversacional
 
@@ -119,11 +180,19 @@ A primeira versão do repositório possuía boa cobertura temática, porém prof
 - `docs/research/conversational-commerce-benchmark.md`;
 - `docs/roadmap/conversational-commerce-roadmap.md`.
 
-Também foram atualizados Storefront, Omnichannel, Purchasing, Multi-tenancy, Fiscal/Pagamentos, README, índice, módulos, visão executiva, rastreabilidade e `AGENTS.md`.
+## Documentos adicionados no passe de operação física de 05/09/2026
+
+- `docs/discovery/mora-pos-hardware-baseline-2026-09-05.md`;
+- `docs/architecture/pos-device-integration.md`;
+- `docs/data/mora-legacy-data-migration.md`.
+
+Também foram atualizados índice, riscos/questões abertas, arquitetura, QA, módulos/AGENTS quando aplicável e rastreabilidade para refletir a evidência real.
 
 ## Cobertura não é implementação
 
 Todos os itens permanecem `planejados` enquanto não houver código/evidência correspondente. A matriz prova que a ideia está documentada; não prova que existe em produção.
+
+O baseline de campo prova que determinado equipamento/tela foi observado, **não** que sua API, driver, contrato, fluxo fiscal ou integração TEF estejam conhecidos.
 
 ## Deliberadamente não finalizado
 
@@ -136,15 +205,31 @@ Os tópicos abaixo **não devem ser artificialmente fechados em documentação**
 - regra de trocas/devoluções;
 - limites reais de descontos, cancelamentos e sangrias;
 - fechamento por turno ou diário;
-- número/configuração de caixas;
+- número/configuração completa de caixas;
 - fluxo real de compra/fornecedor/recebimento;
 - frequência/forma das viagens a fornecedores;
 - regra real para encomenda, sinal e reserva;
 - como pedidos por foto são tratados hoje;
 - número(s) e operação atual do WhatsApp;
 - topologia de CNPJs, depósitos e lojas;
-- hardware atual;
+- ownership real de NOOVA/Lips/Bling por capability;
 - conectividade/contingência necessária.
+
+### Hardware — baseline parcial já conhecido
+
+Não está mais correto dizer simplesmente “hardware atual desconhecido”. Já existe baseline real dos dois caixas. Permanecem abertos:
+
+- drivers, portas e VID/PID;
+- modo HID/keyboard wedge dos leitores;
+- ligação/configuração das gavetas;
+- impressora de etiquetas, se distinta;
+- adquirentes/modelos de terminais;
+- TEF/Pix real;
+- rede/Wi-Fi/link backup;
+- nobreak;
+- equipamentos reserva;
+- lifecycle de PCs/SO;
+- requisito mínimo final do Mora POS.
 
 ### Fiscal/pagamentos
 
@@ -154,7 +239,8 @@ Os tópicos abaixo **não devem ser artificialmente fechados em documentação**
 - TEF/adquirentes/Pix;
 - payment provider para site/WhatsApp;
 - política de conciliação;
-- integração com contabilidade/folha.
+- integração com contabilidade/folha;
+- relação atual entre NOOVA/Lips/Bling/SEFAZ.
 
 ### Stack e infraestrutura
 
@@ -167,7 +253,10 @@ Os tópicos abaixo **não devem ser artificialmente fechados em documentação**
 - observability backend;
 - estratégia de deploy;
 - decisão de monorepo;
-- tecnologia de busca vetorial e desenho de isolamento, se realmente necessária.
+- tecnologia de busca vetorial e desenho de isolamento, se realmente necessária;
+- runtime do cliente POS;
+- estratégia final de Local Device Bridge/wrapper;
+- updater/distribuição do software local.
 
 Esses itens precisam de ADR quando decididos.
 
@@ -182,6 +271,7 @@ Esses itens precisam de ADR quando decididos.
 - quotas/rate limits atuais;
 - política fiscal/fulfillment vigente;
 - Bling API/webhooks vigentes no momento da integração;
+- APIs/exportações/portabilidade de NOOVA e Lips;
 - WebServices/notas técnicas SEFAZ vigentes no momento do fiscal go-live.
 
 Toda integração precisa revalidar documentação oficial antes de implementação.
@@ -196,7 +286,8 @@ Toda integração precisa revalidar documentação oficial antes de implementaç
 - processo formal LGPD;
 - pentest independente;
 - runbooks executáveis;
-- processo de suporte/impersonation SaaS.
+- processo de suporte/impersonation SaaS;
+- política de hardening/renovação das estações físicas.
 
 ### Produto/SaaS
 
